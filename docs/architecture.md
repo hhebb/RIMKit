@@ -41,8 +41,10 @@ The runner uses the following artifact boundaries:
 | 8 | `8_final.npz` | Apply final arm self-collision refinement. |
 | 9 | `9_diagnostics.npz` | Recompute final trajectory diagnostics. |
 
-After Stage 9, CoRe writes a `core-robot-motion-v1` `.npz` containing direct
-MuJoCo `qpos`, timestamps, joint names, contact data, and source/model hashes.
+After Stage 9, CoRe writes a `core-robot-motion-v1` `.npz` containing the root
+MuJoCo `qpos`, named articulated qpos columns, timestamps, contact data, and
+source/model hashes. Most robots retain model order; pelvis-root T1 and T2
+exports use their original vendor XML order recorded by `joint_names`.
 The final archive contains no object arrays and is validated with
 `allow_pickle=False` before publication.
 

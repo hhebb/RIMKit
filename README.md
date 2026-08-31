@@ -16,7 +16,7 @@ RIMKit (Robot Intelligence Lab Motion Kit) converts
 [SOMA](https://github.com/NVlabs/SOMA-X) human motion into whole-body motion for
 humanoid robots. The current release provides the
 [**CoRe**](https://tmjeong1103.github.io/CoRe/) method for contact-aware
-retargeting and bundles thirteen targets
+retargeting and bundles sixteen targets
 from Unitree Robotics, ROBOTIS, Apptronik, LimX Dynamics, Fourier Intelligence,
 PNDbotics, Booster Robotics, ENGINEAI, Asimov, and AgiBot behind one Python and
 command-line interface, with robot-motion `.npz` and video export ready out of
@@ -46,20 +46,20 @@ and
 ## Highlights
 
 - Contact-aware whole-body retargeting with collision refinement and grounding
-- One pipeline for thirteen bundled humanoid robot models
+- One pipeline for sixteen bundled humanoid robot models
 - Switch robots with a single `--robot` argument
 - Compiled C++ MuJoCo kernels with a portable Python fallback
 - Browser, command-line, and Python interfaces
 - Kimodo `.npz` and GEM-X `.pt` source-motion adapters
 - Sixteen ready-to-run source motions: eight Kimodo `.npz` and eight GEM-X `.pt`
-- Reproducible Kimodo and GEM-X batch generation across all thirteen robots
+- Reproducible Kimodo and GEM-X batch generation across all sixteen robots
 
 ## Demo
 
 Try RIMKit without installing it. Start with the bundled Kimodo
 `foot_walk_stop.npz` or GEM-X `scurry_walk.pt` example in one click, or upload
 your own `.npz`/`.pt` SOMA motion. The hosted browser interface runs RIMKit's
-CoRe method across all thirteen bundled humanoid robots, previews the final
+CoRe method across all sixteen bundled humanoid robots, previews the final
 motion, and provides the safe robot-motion `.npz` and manifest for download.
 
 [**Launch the live demo on Hugging Face →**](https://huggingface.co/spaces/robotaemoon/CoRe)
@@ -76,13 +76,13 @@ environment before installing the web dependencies and starting the server.
 
 ## Result videos
 
-The gallery presents two representative source motions across all thirteen
-supported humanoid robots. Results follow their public robot order:
+The currently published gallery presents two representative source motions for
+thirteen supported humanoid robots, grouped by manufacturer:
 **G1, H1, H2, R1, K1, Apollo, Oli, N1, ADAM Lite, T1, PM01, Asimov-1,
 X2-Ultra**.
 
-Each motion uses one wide player row. Scroll horizontally to compare all
-thirteen robots.
+Each motion uses one wide player row. Scroll horizontally to compare the
+thirteen published results.
 
 <details open>
 <summary><b>(From Kimodo) Stand, walk, run, stop — all 13 robots</b></summary>
@@ -151,11 +151,14 @@ Generate results for the other bundled Kimodo and GEM-X motions with
 | 6 | Apptronik | Apollo | `apollo` |
 | 7 | LimX Dynamics | Oli | `oli` |
 | 8 | Fourier Intelligence | N1 | `n1` |
-| 9 | PNDbotics | ADAM Lite | `adam` |
-| 10 | Booster Robotics | T1 | `t1` |
-| 11 | ENGINEAI | PM01 | `pm01` |
-| 12 | Asimov | Asimov-1 | `asimov1` |
-| 13 | AgiBot | X2-Ultra | `x2` |
+| 9 | Fourier Intelligence | GR3 | `gr3` |
+| 10 | PNDbotics | ADAM Lite | `adam` |
+| 11 | Booster Robotics | T1 | `t1` |
+| 12 | Booster Robotics | T2 | `t2` |
+| 13 | ENGINEAI | PM01 | `pm01` |
+| 14 | Asimov | Asimov-1 | `asimov1` |
+| 15 | AgiBot | X2-Ultra | `x2` |
+| 16 | AgiBot | A3 T3.0 | `a3` |
 | — | More manufacturers | **More humanoid robots coming soon** | — |
 
 Switch the target humanoid by changing a single `--robot` argument.
@@ -302,7 +305,7 @@ GEM-X `.pt` source motion when needed.
 </details>
 
 <details>
-<summary><b>Generate all 16 bundled motions for all 13 robots</b></summary>
+<summary><b>Generate all 16 bundled motions for all 16 robots</b></summary>
 
 Kimodo (`.npz`):
 

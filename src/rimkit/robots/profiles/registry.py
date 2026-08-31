@@ -7,10 +7,12 @@ from types import MappingProxyType
 from typing import Literal
 
 from rimkit.exceptions import ConfigurationError
+from rimkit.robots.profiles.a3 import A3_DMR_PROFILE
 from rimkit.robots.profiles.adam import ADAM_DMR_PROFILE
 from rimkit.robots.profiles.apollo import APOLLO_DMR_PROFILE
 from rimkit.robots.profiles.asimov1 import ASIMOV1_DMR_PROFILE
 from rimkit.robots.profiles.g1 import G1_DMR_PROFILE
+from rimkit.robots.profiles.gr3 import GR3_DMR_PROFILE
 from rimkit.robots.profiles.h1 import H1_DMR_PROFILE
 from rimkit.robots.profiles.h2 import H2_DMR_PROFILE
 from rimkit.robots.profiles.k1 import K1_DMR_PROFILE
@@ -20,6 +22,7 @@ from rimkit.robots.profiles.pm01 import PM01_DMR_PROFILE
 from rimkit.robots.profiles.r1 import R1_DMR_PROFILE
 from rimkit.robots.profiles.schema import DmrProfile
 from rimkit.robots.profiles.t1 import T1_DMR_PROFILE
+from rimkit.robots.profiles.t2 import T2_DMR_PROFILE
 from rimkit.robots.profiles.x2 import X2_DMR_PROFILE
 from rimkit.robots.registry import get_robot
 
@@ -38,6 +41,9 @@ DMR_PROFILES = MappingProxyType(
         "pm01": PM01_DMR_PROFILE,
         "asimov1": ASIMOV1_DMR_PROFILE,
         "x2": X2_DMR_PROFILE,
+        "gr3": GR3_DMR_PROFILE,
+        "a3": A3_DMR_PROFILE,
+        "t2": T2_DMR_PROFILE,
     }
 )
 

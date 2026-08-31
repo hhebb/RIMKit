@@ -18,52 +18,56 @@ _SOLVER = IkSolverProfile(
     joint_limit_probe=radians(3.0),
 )
 
-G1_INITIAL_COLLISION_PROFILE = InitialCollisionProfile(
+_BASE_INITIAL_COLLISION_PROFILE = InitialCollisionProfile(
     robot_id="g1",
     qpos_dim=36,
     solver=_SOLVER,
+    # End on a temporally smoothed 30 mm pass.  If a pass clears every
+    # violation at that margin, the collision stage exits immediately.
+    final_pass_without_smoothing=False,
 )
+G1_INITIAL_COLLISION_PROFILE = _BASE_INITIAL_COLLISION_PROFILE
 H1_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="h1",
     qpos_dim=27,
 )
 H2_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="h2",
     qpos_dim=38,
 )
 R1_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="r1",
     qpos_dim=36,
 )
 K1_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="k1",
     qpos_dim=30,
 )
 APOLLO_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="apollo",
     qpos_dim=39,
     root_body_name="base_link",
     movable_body_prefixes=("l_", "r_"),
 )
 OLI_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="oli",
     qpos_dim=68,
     root_body_name="base_link",
 )
 N1_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="n1",
     qpos_dim=30,
     root_body_name="base_link",
 )
 ADAM_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="adam",
     qpos_dim=32,
     root_body_name="pelvis",
@@ -82,24 +86,14 @@ ADAM_INITIAL_COLLISION_PROFILE = replace(
     ),
 )
 T1_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="t1",
     qpos_dim=30,
-    root_body_name="Trunk",
-    movable_body_prefixes=(
-        "H",
-        "AL",
-        "AR",
-        "Waist",
-        "Hip_",
-        "Shank_",
-        "Ankle_",
-        "left_",
-        "right_",
-    ),
+    root_body_name="waist_yaw_link",
+    movable_body_prefixes=("aahead_", "left_", "right_", "trunk", "waist_"),
 )
 PM01_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="pm01",
     qpos_dim=31,
     root_body_name="LINK_BASE",
@@ -115,15 +109,35 @@ PM01_INITIAL_COLLISION_PROFILE = replace(
     ),
 )
 ASIMOV1_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="asimov1",
     qpos_dim=30,
     root_body_name="pelvis_link",
 )
 X2_INITIAL_COLLISION_PROFILE = replace(
-    G1_INITIAL_COLLISION_PROFILE,
+    _BASE_INITIAL_COLLISION_PROFILE,
     robot_id="x2",
     qpos_dim=38,
+)
+GR3_INITIAL_COLLISION_PROFILE = replace(
+    _BASE_INITIAL_COLLISION_PROFILE,
+    robot_id="gr3",
+    qpos_dim=38,
+    root_body_name="base_link",
+    movable_body_prefixes=("left_", "right_", "dummy_right_"),
+)
+A3_INITIAL_COLLISION_PROFILE = replace(
+    _BASE_INITIAL_COLLISION_PROFILE,
+    robot_id="a3",
+    qpos_dim=38,
+    root_body_name="pelvis_link",
+)
+T2_INITIAL_COLLISION_PROFILE = replace(
+    _BASE_INITIAL_COLLISION_PROFILE,
+    robot_id="t2",
+    qpos_dim=38,
+    root_body_name="waist_yaw_link",
+    ancestor_skip_depth=3,
 )
 
 INITIAL_COLLISION_PROFILES = MappingProxyType(
@@ -143,6 +157,9 @@ INITIAL_COLLISION_PROFILES = MappingProxyType(
             PM01_INITIAL_COLLISION_PROFILE,
             ASIMOV1_INITIAL_COLLISION_PROFILE,
             X2_INITIAL_COLLISION_PROFILE,
+            GR3_INITIAL_COLLISION_PROFILE,
+            A3_INITIAL_COLLISION_PROFILE,
+            T2_INITIAL_COLLISION_PROFILE,
         )
     }
 )
@@ -162,9 +179,11 @@ def get_initial_collision_profile(robot_id: str) -> InitialCollisionProfile:
 
 __all__ = [
     "ADAM_INITIAL_COLLISION_PROFILE",
+    "A3_INITIAL_COLLISION_PROFILE",
     "APOLLO_INITIAL_COLLISION_PROFILE",
     "ASIMOV1_INITIAL_COLLISION_PROFILE",
     "G1_INITIAL_COLLISION_PROFILE",
+    "GR3_INITIAL_COLLISION_PROFILE",
     "H1_INITIAL_COLLISION_PROFILE",
     "H2_INITIAL_COLLISION_PROFILE",
     "INITIAL_COLLISION_PROFILES",
@@ -174,6 +193,7 @@ __all__ = [
     "PM01_INITIAL_COLLISION_PROFILE",
     "R1_INITIAL_COLLISION_PROFILE",
     "T1_INITIAL_COLLISION_PROFILE",
+    "T2_INITIAL_COLLISION_PROFILE",
     "X2_INITIAL_COLLISION_PROFILE",
     "get_initial_collision_profile",
 ]

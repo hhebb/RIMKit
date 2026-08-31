@@ -12,6 +12,8 @@ import rimkit.stages.dmr as dmr_stage
 from rimkit.exceptions import ConfigurationError, MotionValidationError
 from rimkit.motion import extract_soma_joi, load_soma_motion
 from rimkit.mujoco.model import MujocoModel
+from rimkit.mujoco.robot_kinematics import derive_neutral_geometry
+from rimkit.robots.profiles.a3 import A3_DMR_PROFILE
 from rimkit.robots.profiles.asimov1 import ASIMOV1_DMR_PROFILE
 from rimkit.robots.profiles.g1 import G1_DMR_PROFILE
 from rimkit.robots.profiles.h1 import H1_DMR_PROFILE
@@ -90,6 +92,35 @@ def test_disabled_hand_orientation_accepts_h1_without_wrist_joints() -> None:
         )
 
 
+def test_robot_neutral_delta_is_conjugated_into_pelvis_body_frame() -> None:
+    body_from_anatomical = dmr_stage.Rotation.from_euler(
+        "xyz", (0.21, -0.13, 0.37)
+    ).as_matrix()
+    source_reference = np.array([0.0, 0.0, 1.0])
+    source_current = np.array([0.24, -0.18, 0.954777])
+    source_current /= np.linalg.norm(source_current)
+    robot_local = np.array([0.08, -0.04, 0.52])
+
+    anatomical_delta = dmr_stage._minimal_rotation_between(
+        source_reference,
+        source_current,
+    )
+    expected = (
+        body_from_anatomical.T
+        @ anatomical_delta
+        @ body_from_anatomical
+        @ robot_local
+    )
+    actual = dmr_stage._robot_neutral_delta_vector(
+        robot_local,
+        source_reference,
+        source_current,
+        body_from_anatomical,
+    )
+
+    np.testing.assert_allclose(actual, expected, rtol=0.0, atol=1e-15)
+
+
 def test_run_dmr_rejects_source_joi_timestamp_mismatch() -> None:
     motion = load_soma_motion(EXAMPLE)
     source_joi = extract_soma_joi(motion)
@@ -151,6 +182,60 @@ def test_r1_semantic_base_anchor_is_the_neutral_auxiliary_hip_midpoint() -> None
     np.testing.assert_array_equal(
         actual_transform[:3, :3],
         model.get_body_transform(R1_DMR_PROFILE.joi_bodies["base"])[:3, :3],
+    )
+
+
+@pytest.mark.mujoco
+def test_robot_bind_trunk_uses_semantic_base_anchor_for_a3() -> None:
+    model = MujocoModel.from_robot("a3")
+    model.reset()
+    geometry = derive_neutral_geometry(
+        model,
+        A3_DMR_PROFILE.joi_bodies,
+        link_length_base_reference=A3_DMR_PROFILE.link_length_base_reference,
+    )
+    anchors = dmr_stage._resolve_semantic_joi_anchors(model, A3_DMR_PROFILE)
+    base_position = dmr_stage._semantic_joi_position(
+        model,
+        A3_DMR_PROFILE,
+        "base",
+        anchors,
+    )
+    base_rotation = geometry.body_transforms["base"][:3, :3]
+    robot_spine_local = base_rotation.T @ (
+        geometry.body_transforms["spine"][:3, 3] - base_position
+    )
+    robot_neck_local = base_rotation.T @ (
+        geometry.body_transforms["neck"][:3, 3] - base_position
+    )
+
+    source = dict(geometry.body_transforms)
+    source_base = np.array(source["base"], copy=True)
+    source_base[:3, 3] = base_position
+    source["base"] = source_base
+    source["rtoe"] = source["rt"]
+    source["ltoe"] = source["lt"]
+    targets = dict(
+        dmr_stage._body_targets(
+            source,
+            geometry,
+            profile=A3_DMR_PROFILE,
+            effective_base_rotation=base_rotation,
+            trunk_blend=1.0,
+            source_base_rotation=base_rotation,
+            source_spine_reference_local=np.array([0.0, 0.0, 1.0]),
+            source_neck_reference_local=np.array([0.0, 0.0, 1.0]),
+            robot_spine_local=robot_spine_local,
+            robot_neck_local=robot_neck_local,
+            robot_body_from_anatomical=np.eye(3),
+        )
+    )
+
+    np.testing.assert_allclose(
+        targets["spine"],
+        geometry.body_transforms["spine"][:3, 3],
+        rtol=0.0,
+        atol=1e-15,
     )
 
 

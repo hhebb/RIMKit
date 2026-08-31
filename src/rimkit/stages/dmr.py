@@ -696,16 +696,65 @@ def _robot_neutral_delta_vector(
     robot_local_vector: NDArray[np.float64],
     source_reference_local: NDArray[np.float64],
     source_current_local: NDArray[np.float64],
+    robot_body_from_anatomical: NDArray[np.float64] | None = None,
 ) -> NDArray[np.float64]:
-    """Transfer only a source direction change onto robot-neutral geometry."""
+    """Transfer an anatomical source delta into robot pelvis-body coordinates."""
 
+    body_from_anatomical = (
+        np.eye(3, dtype=np.float64)
+        if robot_body_from_anatomical is None
+        else np.asarray(robot_body_from_anatomical, dtype=np.float64).reshape(3, 3)
+    )
+    anatomical_delta = _minimal_rotation_between(
+        source_reference_local,
+        source_current_local,
+    )
+    body_local_delta = np.matmul(
+        body_from_anatomical.T,
+        np.matmul(anatomical_delta, body_from_anatomical),
+    )
     return np.asarray(
-        np.matmul(
-            _minimal_rotation_between(source_reference_local, source_current_local),
-            np.asarray(robot_local_vector, dtype=np.float64),
-        ),
+        np.matmul(body_local_delta, np.asarray(robot_local_vector, dtype=np.float64)),
         dtype=np.float64,
     )
+
+
+def _anatomical_pelvis_rotation(
+    transforms: Mapping[str, NDArray[np.float64]],
+) -> NDArray[np.float64]:
+    """Build a robot-neutral pelvis frame from semantic JOI positions."""
+
+    p_base = position(transforms["base"])
+    side_vectors = (
+        position(transforms["lp"]) - position(transforms["rp"]),
+        position(transforms["ls"]) - position(transforms["rs"]),
+    )
+    y_left = unit_vector(
+        np.mean(
+            [unit_vector(vector, fallback=(0.0, 1.0, 0.0)) for vector in side_vectors],
+            axis=0,
+        ),
+        fallback=(0.0, 1.0, 0.0),
+    )
+    p_upper = np.mean(
+        (
+            position(transforms["spine"]),
+            position(transforms["neck"]),
+            0.5 * (position(transforms["ls"]) + position(transforms["rs"])),
+        ),
+        axis=0,
+    )
+    z_up = p_upper - p_base
+    z_up = unit_vector(z_up - y_left * float(np.dot(z_up, y_left)))
+    x_forward = unit_vector(
+        np.cross(y_left, z_up),
+        fallback=(1.0, 0.0, 0.0),
+    )
+    y_left = unit_vector(
+        np.cross(z_up, x_forward),
+        fallback=(0.0, 1.0, 0.0),
+    )
+    return np.column_stack((x_forward, y_left, z_up))
 
 
 def _body_targets(
@@ -720,6 +769,7 @@ def _body_targets(
     source_neck_reference_local: NDArray[np.float64],
     robot_spine_local: NDArray[np.float64],
     robot_neck_local: NDArray[np.float64],
+    robot_body_from_anatomical: NDArray[np.float64],
 ) -> tuple[tuple[str, NDArray[np.float64]], ...]:
     lengths = geometry.link_lengths
     p_base = position(source["base"])
@@ -730,18 +780,12 @@ def _body_targets(
 
     alpha = float(np.clip(trunk_blend, 0.0, 1.0))
     if alpha > 0.0 and profile.trunk_position_mode == "robot_bind_local":
-        base_rotation = rotation(geometry.body_transforms["base"])
-        base_position = position(geometry.body_transforms["base"])
-        robot_bind_spine_local = np.matmul(
-            base_rotation.T,
-            position(geometry.body_transforms["spine"]) - base_position,
-        )
-        robot_bind_neck_local = np.matmul(
-            base_rotation.T,
-            position(geometry.body_transforms["neck"]) - base_position,
-        )
-        p_spine_local = p_base + np.matmul(effective_base_rotation, robot_bind_spine_local)
-        p_neck_local = p_base + np.matmul(effective_base_rotation, robot_bind_neck_local)
+        # These vectors are resolved against the semantic base anchor before
+        # entering this helper.  Recomputing them from the mapped base body's
+        # origin is incorrect for robots such as A3 whose pelvis JOI is the
+        # midpoint between the hip anchors rather than the pelvis body origin.
+        p_spine_local = p_base + np.matmul(effective_base_rotation, robot_spine_local)
+        p_neck_local = p_base + np.matmul(effective_base_rotation, robot_neck_local)
         p_spine = (1.0 - alpha) * p_spine_world + alpha * p_spine_local
         p_neck = (1.0 - alpha) * p_neck_world + alpha * p_neck_local
     elif alpha > 0.0 and profile.trunk_position_mode == "robot_neutral_delta":
@@ -751,11 +795,13 @@ def _body_targets(
             robot_spine_local,
             source_spine_reference_local,
             source_spine_local,
+            robot_body_from_anatomical,
         )
         robot_neck_segment_target = _robot_neutral_delta_vector(
             robot_neck_local - robot_spine_local,
             source_neck_reference_local,
             source_neck_local,
+            robot_body_from_anatomical,
         )
         p_spine_local = p_base + np.matmul(
             effective_base_rotation,
@@ -1001,6 +1047,16 @@ def run_dmr(
         robot_base_rotation.T,
         position(geometry.body_transforms["neck"]) - robot_base_anchor_position,
     )
+    # The anatomical/body-frame relation is a property of the physical model
+    # frame.  Keep the mapped pelvis body origin here; the optional semantic
+    # mid-hip anchor is used only for positional JOI targets above.
+    robot_anatomical_rotation = _anatomical_pelvis_rotation(
+        geometry.body_transforms
+    )
+    robot_body_from_anatomical = np.matmul(
+        robot_anatomical_rotation.T,
+        robot_base_rotation,
+    )
     source_spine_reference_local = np.matmul(
         source_base_rotations[0].T,
         unit_vector(position(source[0]["spine"]) - position(source[0]["base"])),
@@ -1212,6 +1268,7 @@ def run_dmr(
             source_neck_reference_local=source_neck_reference_local,
             robot_spine_local=robot_spine_local,
             robot_neck_local=robot_neck_local,
+            robot_body_from_anatomical=robot_body_from_anatomical,
         )
         target_positions = dict(targets)
 
@@ -1273,6 +1330,7 @@ def run_dmr(
                 source_neck_reference_local=source_neck_reference_local,
                 robot_spine_local=robot_spine_local,
                 robot_neck_local=robot_neck_local,
+                robot_body_from_anatomical=robot_body_from_anatomical,
             )
             target_positions = dict(targets)
             populate_primary_targets(targets, target_positions, tick)

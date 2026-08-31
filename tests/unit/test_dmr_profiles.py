@@ -6,6 +6,7 @@ from dataclasses import FrozenInstanceError, fields, replace
 
 from rimkit.exceptions import ConfigurationError
 from rimkit.mujoco import MujocoModel
+from rimkit.mujoco.ground import find_body_collision_geoms
 from rimkit.robots.joi import get_body_joi_mapping
 from rimkit.robots.profiles import DMR_PROFILES, get_dmr_profile
 from rimkit.robots.profiles.g1 import G1_DMR_PROFILE
@@ -32,6 +33,9 @@ class DmrProfileTest(unittest.TestCase):
             "pm01",
             "asimov1",
             "x2",
+            "gr3",
+            "a3",
+            "t2",
         )
         self.assertEqual(tuple(DMR_PROFILES), expected)
         for robot_id in expected:
@@ -260,7 +264,13 @@ class DmrProfileTest(unittest.TestCase):
 
         self.assertEqual(profile.qpos_dim, 38)
         for field in fields(DmrProfile):
-            if field.name in {"robot_id", "qpos_dim", "joi_bodies"}:
+            if field.name in {
+                "robot_id",
+                "qpos_dim",
+                "joi_bodies",
+                "left_ankle_orientation_joi_key",
+                "right_ankle_orientation_joi_key",
+            }:
                 continue
             with self.subTest(field=field.name):
                 self.assertEqual(
@@ -306,9 +316,12 @@ class DmrProfileTest(unittest.TestCase):
             "apollo": (39, ("torso_roll", "torso_pitch"), ("wrist",), True, "post", True),
             "oli": (68, ("waist_roll", "waist_pitch"), ("wrist",), True, "post", True),
             "n1": (30, ("waist_yaw_joint",), ("wrist",), True, "post", True),
-            "adam": (32, ("waistRoll", "waistPitch"), ("wrist",), True, "post", True),
-            "t1": (30, ("Waist",), ("Elbow_Yaw",), True, "post", True),
+            "adam": (32, ("waistRoll", "waistPitch"), ("wrist",), False, "post", True),
+            "t1": (30, ("waist_yaw",), (), False, "none", False),
             "pm01": (31, ("J12_WAIST_YAW",), ("ELBOW_YAW",), False, "none", False),
+            "gr3": (38, ("waist_roll", "waist_pitch"), ("wrist",), True, "post", True),
+            "a3": (38, ("waist_roll", "waist_pitch"), ("wrist",), True, "post", True),
+            "t2": (38, ("waist_pitch", "waist_roll"), ("wrist",), True, "post", True),
         }
         for robot_id, values in expected.items():
             with self.subTest(robot=robot_id):
@@ -332,7 +345,17 @@ class DmrProfileTest(unittest.TestCase):
                 self.assertEqual(profile.right_ankle_orientation_joi_key, "rsole")
 
     def test_new_profile_joi_bodies_exist_in_packaged_models(self) -> None:
-        for robot_id in ("apollo", "oli", "n1", "adam", "t1", "pm01"):
+        for robot_id in (
+            "apollo",
+            "oli",
+            "n1",
+            "adam",
+            "t1",
+            "pm01",
+            "gr3",
+            "a3",
+            "t2",
+        ):
             with self.subTest(robot=robot_id):
                 model = MujocoModel.from_robot(robot_id)
                 for key, body_name in get_dmr_profile(robot_id).joi_bodies.items():
@@ -392,7 +415,8 @@ class DmrProfileTest(unittest.TestCase):
         self.assertEqual(joi["rh"], "right_wrist_yaw_link")
 
     def test_h1_joi_mapping_matches_model_semantics(self) -> None:
-        joi = get_dmr_profile("h1").joi_bodies
+        profile = get_dmr_profile("h1")
+        joi = profile.joi_bodies
         self.assertEqual(joi["base"], "pelvis")
         self.assertEqual(joi["lp"], "left_hip_pitch_link")
         self.assertEqual(joi["rp"], "right_hip_pitch_link")
@@ -402,19 +426,93 @@ class DmrProfileTest(unittest.TestCase):
         self.assertEqual(joi["rsole"], "right_sole_link")
         self.assertEqual(joi["lh"], "left_hand_link")
         self.assertEqual(joi["rh"], "right_hand_link")
+        self.assertEqual(
+            dict(profile.joi_anchor_reference_keys),
+            {"base": ("lp", "rp")},
+        )
 
     def test_h2_joi_mapping_matches_model_semantics(self) -> None:
         joi = get_dmr_profile("h2").joi_bodies
         self.assertEqual(dict(joi), dict(get_body_joi_mapping("h2")))
         self.assertEqual(joi["base"], "pelvis")
+        self.assertEqual(joi["lp"], "left_hip_roll_link_aux")
+        self.assertEqual(joi["rp"], "right_hip_roll_link_aux")
         self.assertEqual(joi["spine"], "waist_yaw_link")
         self.assertEqual(joi["torso"], "torso_link")
-        self.assertEqual(joi["lf"], "left_ankle_pitch_link")
-        self.assertEqual(joi["rf"], "right_ankle_pitch_link")
+        self.assertEqual(joi["lk"], "left_knee_link_aux")
+        self.assertEqual(joi["rk"], "right_knee_link_aux")
+        self.assertEqual(joi["la"], "left_ankle_roll_link_aux")
+        self.assertEqual(joi["ra"], "right_ankle_roll_link_aux")
+        self.assertEqual(joi["lf"], "left_ankle_roll_link_aux")
+        self.assertEqual(joi["rf"], "right_ankle_roll_link_aux")
         self.assertEqual(joi["lsole"], "left_sole_link")
         self.assertEqual(joi["rsole"], "right_sole_link")
+        self.assertEqual(
+            get_dmr_profile("h2").left_ankle_orientation_joi_key,
+            "lsole",
+        )
+        self.assertEqual(
+            get_dmr_profile("h2").right_ankle_orientation_joi_key,
+            "rsole",
+        )
         self.assertEqual(joi["lh"], "left_wrist_yaw_link")
         self.assertEqual(joi["rh"], "right_wrist_yaw_link")
+        self.assertEqual(joi["lw"], "left_wrist_yaw_link")
+        self.assertEqual(joi["rw"], "right_wrist_yaw_link")
+        self.assertEqual(joi["le"], "left_elbow_link_aux")
+        self.assertEqual(joi["re"], "right_elbow_link_aux")
+
+    def test_h2_leg_joi_landmarks_share_the_hip_roll_centerline(self) -> None:
+        model = MujocoModel.from_robot("h2")
+        joi = get_dmr_profile("h2").joi_bodies
+
+        for side, prefix in (("left", "l"), ("right", "r")):
+            with self.subTest(side=side):
+                hip_y = model.get_body_transform(joi[f"{prefix}p"])[1, 3]
+                hip_x = model.get_body_transform(joi[f"{prefix}p"])[0, 3]
+                knee_y = model.get_body_transform(joi[f"{prefix}k"])[1, 3]
+                knee_x = model.get_body_transform(joi[f"{prefix}k"])[0, 3]
+                ankle_y = model.get_body_transform(joi[f"{prefix}a"])[1, 3]
+                ankle_x = model.get_body_transform(joi[f"{prefix}a"])[0, 3]
+                self.assertAlmostEqual(knee_y, hip_y, places=9)
+                self.assertAlmostEqual(knee_x, hip_x, places=9)
+                self.assertAlmostEqual(ankle_y, hip_y, places=9)
+                self.assertAlmostEqual(ankle_x, hip_x, places=9)
+
+                # The aligned foot landmark remains an ancestor of the
+                # unchanged physical sole, so geometry-based grounding still
+                # resolves the real collision geoms.
+                collision_geoms = find_body_collision_geoms(
+                    model,
+                    joi[f"{prefix}f"],
+                    include_descendants=True,
+                )
+                self.assertGreater(len(collision_geoms), 0)
+
+    def test_h2_hip_joi_landmarks_share_the_hip_yaw_fore_aft_position(self) -> None:
+        model = MujocoModel.from_robot("h2")
+        joi = get_dmr_profile("h2").joi_bodies
+
+        for side, prefix in (("left", "l"), ("right", "r")):
+            with self.subTest(side=side):
+                hip_x = model.get_body_transform(joi[f"{prefix}p"])[0, 3]
+                yaw_x = model.get_body_transform(f"{side}_hip_yaw_link")[0, 3]
+                self.assertAlmostEqual(hip_x, yaw_x, places=9)
+
+    def test_h2_elbow_joi_landmarks_share_the_shoulder_roll_centerline(self) -> None:
+        model = MujocoModel.from_robot("h2")
+        joi = get_dmr_profile("h2").joi_bodies
+
+        for side, prefix in (("left", "l"), ("right", "r")):
+            with self.subTest(side=side):
+                shoulder_y = model.get_body_transform(joi[f"{prefix}s"])[1, 3]
+                elbow_y = model.get_body_transform(joi[f"{prefix}e"])[1, 3]
+                elbow_z = model.get_body_transform(joi[f"{prefix}e"])[2, 3]
+                wrist_z = model.get_body_transform(
+                    f"{side}_wrist_yaw_link"
+                )[2, 3]
+                self.assertAlmostEqual(elbow_y, shoulder_y, places=9)
+                self.assertAlmostEqual(elbow_z, wrist_z, places=9)
 
     def test_r1_joi_mapping_matches_model_semantics(self) -> None:
         joi = get_dmr_profile("r1").joi_bodies

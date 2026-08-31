@@ -14,7 +14,7 @@ EXPECTED_CANDIDATES = {
     # root geoms, collision geoms, raw pairs, filtered pairs, movable bodies, arm joints
     "g1": (39, 40, 720, 444, 14, 14),
     "h1": (20, 21, 191, 108, 12, 8),
-    "h2": (33, 34, 507, 261, 16, 14),
+    "h2": (33, 34, 507, 261, 18, 14),
     "r1": (24, 25, 268, 111, 22, 14),
     "k1": (15, 16, 114, 63, 12, 10),
 }

@@ -57,19 +57,61 @@ packaged model.
 
 ## MuJoCo Menagerie robot descriptions
 
-Models: Apptronik Apollo, Fourier Intelligence N1, PNDbotics ADAM Lite, and
-Booster Robotics T1
+Models: Apptronik Apollo, Fourier Intelligence N1, and PNDbotics ADAM Lite
 
 Source: https://github.com/google-deepmind/mujoco_menagerie
 
 Pinned source revision: 71f066ad0be9cd271f7ed58c030243ef157af9f4
 
-Licenses: Apache-2.0 for Apollo, N1, and T1; MIT for ADAM Lite. Copies are
+Licenses: Apache-2.0 for Apollo and N1; MIT for ADAM Lite. Copies are
 provided under `licenses/` and beside the packaged assets.
 
 The RIMKit-local XML files contain retargeting landmarks and scene-integration
 changes. Exact provenance, modifications, and hashes are recorded in each
 vendor's adjacent SOURCE.yaml and FILES.sha256 manifests.
+
+## Booster Robotics robot descriptions
+
+Models: T1 and T2
+
+Source: https://github.com/BoosterRobotics/booster_assets
+
+Pinned source revision: 38a0ae84b17743a8aa21511f69ed38e7d22d1664
+
+License: BSD-3-Clause. A copy is provided at
+`licenses/booster-BSD-3-Clause.txt` and with the packaged Booster assets.
+
+The RIMKit-local XML files use a pelvis-root kinematic tree for IK and add
+retargeting landmarks. Exported motions retain the original vendor joint
+order. Exact modifications and hashes are recorded beside the assets.
+
+## Fourier Intelligence GR3 robot description
+
+Model: GR3
+
+Source: https://github.com/YanjieZe/GMR
+
+Pinned source revision: bb1bbe40774794fceb2a7c579a3464a28e68c844
+
+License: MIT. A copy is provided at `licenses/gmr-MIT.txt` and beside the
+packaged GR3 assets.
+
+The RIMKit-local XML removes the standalone scene, adds contact-aware
+retargeting landmarks, and enables the physical foot and hand mesh collisions.
+
+## AgiBot A3 robot description
+
+Model: A3 T3.0
+
+Source: https://github.com/AgibotTech/A3-A3U-robot-model
+
+Pinned source revision: 589f508ff357447c610a3f3004419035ddc8f153
+
+License: MulanPSL-2.0. A copy is provided at
+`licenses/agibot-MulanPSL-2.0.txt` and with the packaged AgiBot assets.
+
+The RIMKit-local XML removes the standalone terrain include and adds shoulder,
+sole, toe, and hand-tip retargeting landmarks.
 
 ## LimX Dynamics Oli robot description
 

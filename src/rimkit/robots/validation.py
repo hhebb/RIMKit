@@ -173,6 +173,35 @@ def verify_robot(spec: RobotSpec, *, load_mujoco: bool = True) -> ModelVerificat
             )
         )
 
+    if spec.export_joint_names:
+        missing_export_joints = sorted(set(spec.export_joint_names) - joint_names)
+        if missing_export_joints:
+            issues.append(
+                VerificationIssue(
+                    "error",
+                    "missing_export_joints",
+                    "Export layout references missing joints: "
+                    + ", ".join(missing_export_joints)
+                    + ".",
+                )
+            )
+        if len(spec.export_joint_names) != spec.expected_nq - 7:
+            issues.append(
+                VerificationIssue(
+                    "error",
+                    "export_joint_count_mismatch",
+                    "Export layout must contain one name per articulated qpos scalar.",
+                )
+            )
+        if len(set(spec.export_joint_names)) != len(spec.export_joint_names):
+            issues.append(
+                VerificationIssue(
+                    "error",
+                    "duplicate_export_joints",
+                    "Export layout contains duplicate joint names.",
+                )
+            )
+
     free_joint_count = sum(
         int(joint_type == mujoco.mjtJoint.mjJNT_FREE) for joint_type in model.jnt_type
     )

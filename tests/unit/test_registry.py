@@ -20,11 +20,14 @@ class RobotRegistryTest(unittest.TestCase):
                 "apollo",
                 "oli",
                 "n1",
+                "gr3",
                 "adam",
                 "t1",
+                "t2",
                 "pm01",
                 "asimov1",
                 "x2",
+                "a3",
             ],
         )
 
