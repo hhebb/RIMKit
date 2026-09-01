@@ -24,7 +24,8 @@ limits:
 - 32 MB maximum SOMA source upload (`.npz` or `.pt`)
 - 1,800 frames per motion
 - three running-plus-queued jobs
-- 854×480 default and 1280×720 maximum preview resolution
+- 640×360 default and 1280×720 maximum preview resolution
+- 15 FPS browser preview cap; exported robot motion retains its source timeline
 - no intermediate stage archives
 - completed uploads and results removed after 30 minutes
 

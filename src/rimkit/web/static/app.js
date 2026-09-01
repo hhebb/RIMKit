@@ -92,6 +92,25 @@ async function loadBackend() {
     if (elements.resolutionInput.selectedOptions[0]?.disabled && firstAllowed !== null) {
       elements.resolutionInput.value = firstAllowed;
     }
+    const defaultWidth = Number(limits.default_video_width);
+    const defaultHeight = Number(limits.default_video_height);
+    const defaultResolution = `${defaultWidth}x${defaultHeight}`;
+    let defaultOption = Array.from(elements.resolutionInput.options).find(
+      (option) => option.value === defaultResolution && !option.disabled,
+    );
+    if (
+      !defaultOption &&
+      defaultWidth >= 320 &&
+      defaultHeight >= 240 &&
+      defaultWidth <= maxWidth &&
+      defaultHeight <= maxHeight
+    ) {
+      defaultOption = document.createElement("option");
+      defaultOption.value = defaultResolution;
+      defaultOption.textContent = `${defaultWidth} × ${defaultHeight}`;
+      elements.resolutionInput.prepend(defaultOption);
+    }
+    if (defaultOption) elements.resolutionInput.value = defaultResolution;
 
     if (limits.result_ttl_seconds !== null && limits.result_ttl_seconds !== undefined) {
       const minutes = Math.round(Number(limits.result_ttl_seconds) / 60);

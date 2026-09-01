@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import shutil
 import threading
 import time
@@ -47,6 +48,7 @@ class PipelineRunner(Protocol):
         save_stages: bool = True,
         render_video: bool = False,
         render_thumbnail: bool = False,
+        preview_max_fps: float | None = None,
         width: int = 1280,
         height: int = 720,
         event_sink: CallbackEventSink | None = None,
@@ -102,6 +104,7 @@ class JobManager:
         max_workers: int = 1,
         max_active_jobs: int | None = None,
         result_ttl_seconds: float | None = None,
+        preview_max_fps: float | None = None,
         runner: PipelineRunner = run_retarget_pipeline,
     ) -> None:
         if max_workers != 1:
@@ -110,10 +113,17 @@ class JobManager:
             raise ValueError("max_active_jobs must be positive when configured.")
         if result_ttl_seconds is not None and result_ttl_seconds <= 0.0:
             raise ValueError("result_ttl_seconds must be positive when configured.")
+        if preview_max_fps is not None and (
+            isinstance(preview_max_fps, bool)
+            or not math.isfinite(float(preview_max_fps))
+            or preview_max_fps <= 0.0
+        ):
+            raise ValueError("preview_max_fps must be finite and positive when configured.")
         self.runs_dir = Path(runs_dir).expanduser().resolve()
         self.runs_dir.mkdir(parents=True, exist_ok=True)
         self.max_active_jobs = max_active_jobs
         self.result_ttl_seconds = result_ttl_seconds
+        self.preview_max_fps = preview_max_fps
         self._runner = runner
         self._executor = ThreadPoolExecutor(
             max_workers=max_workers,
@@ -358,6 +368,7 @@ class JobManager:
                 save_stages=job.save_stages,
                 render_video=job.render_video,
                 render_thumbnail=job.render_video,
+                preview_max_fps=self.preview_max_fps,
                 width=job.width,
                 height=job.height,
                 event_sink=CallbackEventSink(

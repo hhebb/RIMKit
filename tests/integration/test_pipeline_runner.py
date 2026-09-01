@@ -162,13 +162,14 @@ def _install_fake_pipeline(
         if thumbnail_path is not None:
             thumbnail_path.parent.mkdir(parents=True, exist_ok=True)
             thumbnail_path.write_bytes(b"test-thumbnail")
+        preview_fps = float(kwargs["max_fps"] or 30.0)
         return SimpleNamespace(
             video_path=video_path,
             thumbnail_path=thumbnail_path,
             width=width,
             height=height,
-            fps=30.0,
-            frame_count=2,
+            fps=preview_fps,
+            frame_count=1 if preview_fps == 15.0 else 2,
             camera=_Camera(),
             visualization_style="test",
             contact_overlay="test",
@@ -227,6 +228,33 @@ def test_pipeline_runner_publishes_complete_safe_bundle_atomically(
     assert [record["label"] for record in fpa_diagnostics["stage_60"]] == list(
         FPA_TARGET_SOLVE_LABELS
     )
+
+
+def test_pipeline_runner_caps_only_preview_fps(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.npz"
+    source.write_bytes(b"safe-source")
+    destination = tmp_path / "result"
+    _install_fake_pipeline(monkeypatch, source)
+
+    result = runner.run_retarget_pipeline(
+        source,
+        "g1",
+        destination,
+        save_stages=False,
+        render_video=True,
+        preview_max_fps=15.0,
+    )
+
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["artifacts"]["preview"]["fps"] == 15.0
+    assert manifest["artifacts"]["preview"]["frame_count"] == 1
+    assert manifest["source_motion"]["fps"] == 30.0
+    assert manifest["source_motion"]["frame_count"] == 2
+    with np.load(result.final_motion_path, allow_pickle=False) as motion:
+        assert motion["qpos"].shape == (2, 36)
 
 
 def test_pipeline_runner_warns_for_fpa_fallback_and_inaccurate_status(

@@ -69,11 +69,14 @@ def test_web_app_validates_submits_streams_and_downloads(tmp_path: Path) -> None
         observed_runner_options.update(kwargs)
         return _fake_runner(motion_path, robot_id, output_dir, **kwargs)
 
-    manager = JobManager(tmp_path / "runs", runner=recording_runner)
+    manager = JobManager(tmp_path / "runs", preview_max_fps=15.0, runner=recording_runner)
     app = create_app(
         WebConfig(
             runs_dir=tmp_path / "runs",
             example_motions_dir=EXAMPLE_MOTIONS_DIR,
+            preview_max_fps=15.0,
+            default_video_width=640,
+            default_video_height=360,
         ),
         manager=manager,
     )
@@ -83,6 +86,9 @@ def test_web_app_validates_submits_streams_and_downloads(tmp_path: Path) -> None
             assert health.status_code == 200
             assert health.json()["status"] == "ok"
             assert health.json()["limits"]["max_frames"] == 1_000_000
+            assert health.json()["limits"]["preview_max_fps"] == 15.0
+            assert health.json()["limits"]["default_video_width"] == 640
+            assert health.json()["limits"]["default_video_height"] == 360
             assert health.json()["source_formats"] == ["npz", "pt"]
 
             page = client.get("/")
@@ -98,6 +104,7 @@ def test_web_app_validates_submits_streams_and_downloads(tmp_path: Path) -> None
             assert 'data-testid="robot-select"' in page.text
             assert 'id="selected-robot-name"' in page.text
             assert 'data-testid="robot-grid"' not in page.text
+            assert '<option value="640x360">' not in page.text
             assert '<option value="854x480" selected>' in page.text
             assert "/static/images/rilab_logo.jpg" in page.text
             assert "https://sites.google.com/view/sungjoon-choi/home" in page.text
@@ -187,8 +194,9 @@ def test_web_app_validates_submits_streams_and_downloads(tmp_path: Path) -> None
             job_id = created.json()["job_id"]
             result = manager.wait_for_terminal(job_id, timeout=5)
             assert result["status"] == "succeeded"
-            assert observed_runner_options["width"] == 854
-            assert observed_runner_options["height"] == 480
+            assert observed_runner_options["preview_max_fps"] == 15.0
+            assert observed_runner_options["width"] == 640
+            assert observed_runner_options["height"] == 360
 
             status = client.get(f"/api/jobs/{job_id}")
             assert status.status_code == 200
@@ -217,6 +225,42 @@ def test_web_app_validates_submits_streams_and_downloads(tmp_path: Path) -> None
             assert video_range.status_code == 206
             assert video_range.content == b"vid"
             assert video_range.headers["content-range"] == "bytes 0-2/5"
+    finally:
+        manager.shutdown()
+
+
+def test_web_app_keeps_local_preview_defaults(tmp_path: Path) -> None:
+    observed_runner_options: dict[str, object] = {}
+
+    def recording_runner(
+        motion_path: str | Path,
+        robot_id: str,
+        output_dir: str | Path,
+        **kwargs: object,
+    ) -> RetargetRunResult:
+        observed_runner_options.update(kwargs)
+        return _fake_runner(motion_path, robot_id, output_dir, **kwargs)
+
+    manager = JobManager(tmp_path / "runs", runner=recording_runner)
+    app = create_app(WebConfig(runs_dir=tmp_path / "runs"), manager=manager)
+    try:
+        with TestClient(app) as client:
+            limits = client.get("/api/health").json()["limits"]
+            assert limits["preview_max_fps"] is None
+            assert limits["default_video_width"] == 854
+            assert limits["default_video_height"] == 480
+
+            created = client.post(
+                "/api/jobs",
+                files={"motion": ("walk.npz", EXAMPLE.read_bytes(), "application/octet-stream")},
+                data={"robot": "g1", "render_video": "true"},
+            )
+            assert created.status_code == 202
+            result = manager.wait_for_terminal(created.json()["job_id"], timeout=5)
+            assert result["status"] == "succeeded"
+            assert observed_runner_options["preview_max_fps"] is None
+            assert observed_runner_options["width"] == 854
+            assert observed_runner_options["height"] == 480
     finally:
         manager.shutdown()
 

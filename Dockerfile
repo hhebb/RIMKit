@@ -76,6 +76,9 @@ CMD ["rimkit", "serve", \
      "--max-frames", "1800", \
      "--max-active-jobs", "3", \
      "--result-ttl-minutes", "30", \
+     "--preview-max-fps", "15", \
+     "--default-video-width", "640", \
+     "--default-video-height", "360", \
      "--max-video-width", "1280", \
      "--max-video-height", "720", \
      "--disable-stage-archives"]

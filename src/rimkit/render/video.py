@@ -136,6 +136,54 @@ def _validated_source_provider(source_provider: str) -> SourceProvider:
     raise PreviewRenderError("source_provider must be 'kimodo' or 'gem-x'")
 
 
+def _downsample_preview(
+    trajectory: FloatArray,
+    contacts: PreviewContactState | None,
+    *,
+    source_fps: float,
+    max_fps: float | None,
+) -> tuple[FloatArray, PreviewContactState | None, float]:
+    """Reduce preview frames without changing the exported motion timeline."""
+
+    if max_fps is None:
+        return trajectory, contacts, source_fps
+    if isinstance(max_fps, bool):
+        raise PreviewRenderError("max_fps must be finite and positive")
+    try:
+        requested_fps = float(max_fps)
+    except (TypeError, ValueError, OverflowError) as error:
+        raise PreviewRenderError("max_fps must be finite and positive") from error
+    if not math.isfinite(requested_fps) or requested_fps <= 0.0:
+        raise PreviewRenderError("max_fps must be finite and positive")
+
+    output_fps = min(source_fps, requested_fps)
+    if math.isclose(output_fps, source_fps, rel_tol=0.0, abs_tol=1e-9):
+        return trajectory, contacts, source_fps
+
+    output_frames = max(1, int(round(len(trajectory) * output_fps / source_fps)))
+    indices = np.floor(np.arange(output_frames, dtype=np.float64) * source_fps / output_fps).astype(
+        np.int64
+    )
+    np.minimum(indices, len(trajectory) - 1, out=indices)
+    sampled_trajectory = np.array(trajectory[indices], dtype=np.float64, copy=True, order="C")
+    if contacts is None:
+        return sampled_trajectory, None, output_fps
+
+    sampled_contacts = PreviewContactState(
+        fps=output_fps,
+        seconds=np.arange(output_frames, dtype=np.float64) / output_fps,
+        labels=contacts.labels[indices],
+        confidence=contacts.confidence[indices],
+        availability=contacts.availability,
+        flight=contacts.flight[indices],
+        segment_ranges=np.asarray([[0, output_frames]], dtype=np.int64),
+        segment_boundaries=np.asarray([0.0, 1.0], dtype=np.float64),
+        contact_source=contacts.contact_source,
+        hand_contact_source=contacts.hand_contact_source,
+    )
+    return sampled_trajectory, sampled_contacts, output_fps
+
+
 def _validate_request(
     *,
     robot_id: str,
@@ -546,6 +594,7 @@ def render_motion_preview(
     width: int = LEGACY_WIDTH,
     height: int = LEGACY_HEIGHT,
     source_provider: SourceProvider = "kimodo",
+    max_fps: float | None = None,
 ) -> PreviewArtifacts:
     """Render optional MP4 and PNG previews for one robot trajectory.
 
@@ -575,6 +624,12 @@ def render_motion_preview(
         thumbnail_path=thumbnail_path,
         width=width,
         height=height,
+    )
+    trajectory, contact_state, output_fps = _downsample_preview(
+        trajectory,
+        contact_state,
+        source_fps=output_fps,
+        max_fps=max_fps,
     )
     provider = _validated_source_provider(source_provider)
     camera = _render_preview_files(

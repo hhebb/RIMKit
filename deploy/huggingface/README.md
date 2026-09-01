@@ -21,6 +21,9 @@ sixteen-model target selector, and run RIMKit's complete DMR → CoRe pipeline. 
 extension selects the source adapter. The demo returns the same safe final
 robot-motion `.npz`, manifest, and MP4 preview for either format.
 
+Browser previews default to 640×360 at up to 15 FPS for responsive CPU
+rendering. Downloaded robot-motion data preserves the original source timeline.
+
 The service runs the compiled C++ MuJoCo backend. Public jobs are processed one
 at a time, completed artifacts expire after 30 minutes, and uploaded files are
 stored only on the Space's ephemeral disk.

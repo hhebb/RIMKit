@@ -297,6 +297,7 @@ def run_retarget_pipeline(
     save_stages: bool = True,
     render_video: bool = False,
     render_thumbnail: bool = False,
+    preview_max_fps: float | None = None,
     width: int = LEGACY_WIDTH,
     height: int = LEGACY_HEIGHT,
     event_sink: EventSink | None = None,
@@ -638,6 +639,7 @@ def run_retarget_pipeline(
                 width=width,
                 height=height,
                 source_provider=source_provider,
+                max_fps=preview_max_fps,
             )
             stage_completed(
                 PipelineStage.RENDERING,

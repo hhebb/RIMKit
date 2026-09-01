@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
 from dataclasses import asdict, dataclass
@@ -37,6 +38,9 @@ class WebConfig:
     max_frames: int = 1_000_000
     max_active_jobs: int | None = None
     result_ttl_seconds: float | None = None
+    preview_max_fps: float | None = None
+    default_video_width: int = 854
+    default_video_height: int = 480
     max_video_width: int = 3840
     max_video_height: int = 2160
     allow_stage_archives: bool = True
@@ -50,8 +54,21 @@ class WebConfig:
             raise ValueError("max_active_jobs must be positive when configured.")
         if self.result_ttl_seconds is not None and self.result_ttl_seconds <= 0.0:
             raise ValueError("result_ttl_seconds must be positive when configured.")
+        if self.preview_max_fps is not None and (
+            isinstance(self.preview_max_fps, bool)
+            or not math.isfinite(float(self.preview_max_fps))
+            or self.preview_max_fps <= 0.0
+        ):
+            raise ValueError("preview_max_fps must be finite and positive when configured.")
         if self.max_video_width < 320 or self.max_video_height < 240:
             raise ValueError("Video limits must be at least 320×240.")
+        if (
+            self.default_video_width < 320
+            or self.default_video_height < 240
+            or self.default_video_width > self.max_video_width
+            or self.default_video_height > self.max_video_height
+        ):
+            raise ValueError("Default video dimensions must fit within the video limits.")
 
 
 @dataclass(frozen=True, slots=True)
@@ -170,6 +187,7 @@ def create_app(
         settings.runs_dir,
         max_active_jobs=settings.max_active_jobs,
         result_ttl_seconds=settings.result_ttl_seconds,
+        preview_max_fps=settings.preview_max_fps,
     )
 
     @asynccontextmanager
@@ -226,6 +244,9 @@ def create_app(
                 "max_frames": settings.max_frames,
                 "max_active_jobs": settings.max_active_jobs,
                 "result_ttl_seconds": settings.result_ttl_seconds,
+                "preview_max_fps": settings.preview_max_fps,
+                "default_video_width": settings.default_video_width,
+                "default_video_height": settings.default_video_height,
                 "max_video_width": settings.max_video_width,
                 "max_video_height": settings.max_video_height,
                 "allow_stage_archives": settings.allow_stage_archives,
@@ -323,9 +344,11 @@ def create_app(
         render_video: Annotated[bool, Form()] = True,
         save_stages: Annotated[bool, Form()] = False,
         fps: Annotated[float | None, Form()] = None,
-        width: Annotated[int, Form()] = 854,
-        height: Annotated[int, Form()] = 480,
+        width: Annotated[int | None, Form()] = None,
+        height: Annotated[int | None, Form()] = None,
     ) -> dict[str, Any]:
+        width = settings.default_video_width if width is None else width
+        height = settings.default_video_height if height is None else height
         original_filename = _safe_original_filename(motion)
         try:
             robot_id = get_robot(robot).robot_id
