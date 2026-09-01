@@ -77,60 +77,66 @@ environment before installing the web dependencies and starting the server.
 ## Result videos
 
 The currently published gallery presents two representative source motions for
-thirteen supported humanoid robots, grouped by manufacturer:
-**G1, H1, H2, R1, K1, Apollo, Oli, N1, ADAM Lite, T1, PM01, Asimov-1,
-X2-Ultra**.
+all sixteen supported humanoid robots, grouped by manufacturer:
+**G1, H1, H2, R1, K1, Apollo, Oli, N1, GR3, ADAM Lite, T1, T2, PM01,
+Asimov-1, X2-Ultra, A3 T3.0**.
 
 Each motion uses one wide player row. Scroll horizontally to compare the
-thirteen published results.
+sixteen published results.
 
 <details open>
-<summary><b>(From Kimodo) Stand, walk, run, stop — all 13 robots</b></summary>
+<summary><b>(From Kimodo) Stand, walk, run, stop — all 16 robots</b></summary>
 
 <br>
 
 <div style="width: 100%; overflow-x: auto;">
 <table style="display: block; overflow-x: auto; white-space: nowrap;">
   <tr>
-    <td align="center"><b>G1</b><br><video src="https://github.com/user-attachments/assets/a79a31e6-ee5e-4a2f-9006-828998e41173" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>H1</b><br><video src="https://github.com/user-attachments/assets/dbb48b8b-3781-480a-8720-c978563aa68d" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>H2</b><br><video src="https://github.com/user-attachments/assets/3ee61c33-175a-4ff8-9646-28e7822b1f78" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>R1</b><br><video src="https://github.com/user-attachments/assets/aede49f5-a434-4ff1-ac83-7260f8cd9e34" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>K1</b><br><video src="https://github.com/user-attachments/assets/81627425-d22d-4b9d-b657-cd0da41c93c0" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>Apollo</b><br><video src="https://github.com/user-attachments/assets/f8c23215-b548-446c-9be1-d24bd135d9f9" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>Oli</b><br><video src="https://github.com/user-attachments/assets/a77a38ec-e49b-409a-9a03-29b349a55c9f" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>N1</b><br><video src="https://github.com/user-attachments/assets/e8c806ff-9ad5-430a-9126-05f245c803a8" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>ADAM Lite</b><br><video src="https://github.com/user-attachments/assets/3e516e1b-16a7-4b03-893d-ba62e1c0f8ed" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>T1</b><br><video src="https://github.com/user-attachments/assets/66ceb0b7-b9a7-4f17-8389-0a268c9a5bd6" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>PM01</b><br><video src="https://github.com/user-attachments/assets/5cc1e092-010f-48f9-8ab1-0d314c0fd0aa" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>Asimov-1</b><br><video src="https://github.com/user-attachments/assets/a395b6d7-4c12-4a28-900f-1f05a108306c" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>X2-Ultra</b><br><video src="https://github.com/user-attachments/assets/2733302f-9e5f-46bc-9fd3-12ac11687da8" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>G1</b><br><video src="https://github.com/user-attachments/assets/e69125cf-ddb0-4b4d-92bf-656069366b36" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>H1</b><br><video src="https://github.com/user-attachments/assets/8e363e5d-5094-48eb-988e-2ba0ff8e9a7e" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>H2</b><br><video src="https://github.com/user-attachments/assets/867f53c6-0180-4894-b6ac-f19ea0a99150" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>R1</b><br><video src="https://github.com/user-attachments/assets/40893f00-8f6d-4c61-8873-3816d72c86f1" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>K1</b><br><video src="https://github.com/user-attachments/assets/732fad9f-d9df-4fcc-bdbf-e2d1979d1365" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>Apollo</b><br><video src="https://github.com/user-attachments/assets/e79d593b-dca0-4053-b192-014abbfdce80" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>Oli</b><br><video src="https://github.com/user-attachments/assets/0c56bdac-60c7-4e87-8835-a1f45ffabea7" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>N1</b><br><video src="https://github.com/user-attachments/assets/f2dd8c93-675c-4f3d-9aa3-ae0e0270f40b" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>GR3</b><br><video src="https://github.com/user-attachments/assets/f7137a2c-b3b8-4f5f-b43b-62844b2c3f05" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>ADAM Lite</b><br><video src="https://github.com/user-attachments/assets/d7460afc-d91d-466e-8628-d7bc35b2821d" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>T1</b><br><video src="https://github.com/user-attachments/assets/5b6661c4-773e-4a18-846e-12f613a54126" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>T2</b><br><video src="https://github.com/user-attachments/assets/962bd3e1-a9a6-4f62-9aa8-8cb027d91b36" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>PM01</b><br><video src="https://github.com/user-attachments/assets/022e2b91-59f0-4f0b-9140-3504c58f8661" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>Asimov-1</b><br><video src="https://github.com/user-attachments/assets/b777d032-ffd3-4b9a-908f-098c96174fa1" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>X2-Ultra</b><br><video src="https://github.com/user-attachments/assets/33466fa0-8417-4bf5-802d-d6c47aceca09" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>A3 T3.0</b><br><video src="https://github.com/user-attachments/assets/37a7f327-69fd-40cc-8277-15cfe9769ae8" width="240" controls preload="metadata"></video></td>
   </tr>
 </table>
 </div>
 </details>
 
 <details open>
-<summary><b>(From GEM-X) Rapid Stepping — all 13 robots</b></summary>
+<summary><b>(From GEM-X) Rapid Stepping — all 16 robots</b></summary>
 
 <br>
 
 <div style="width: 100%; overflow-x: auto;">
 <table style="display: block; overflow-x: auto; white-space: nowrap;">
   <tr>
-    <td align="center"><b>G1</b><br><video src="https://github.com/user-attachments/assets/0a9cc7d7-865d-46ab-94e6-85d5957c4d72" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>H1</b><br><video src="https://github.com/user-attachments/assets/64adda0a-7a19-401d-8f56-595cb4907403" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>H2</b><br><video src="https://github.com/user-attachments/assets/125f5807-ac62-4cd5-bbb5-4256f727596c" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>R1</b><br><video src="https://github.com/user-attachments/assets/340998e5-d47f-4666-99ce-3c9a2b870b02" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>K1</b><br><video src="https://github.com/user-attachments/assets/ff63590b-e914-492e-8613-ce28c842df96" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>Apollo</b><br><video src="https://github.com/user-attachments/assets/fe9dffa8-2e38-4121-8408-903b257b71cb" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>Oli</b><br><video src="https://github.com/user-attachments/assets/a61347cb-4f5b-467c-8dfa-35a1018139fc" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>N1</b><br><video src="https://github.com/user-attachments/assets/9a91a33f-a534-45a8-92a4-17dcf36d6530" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>ADAM Lite</b><br><video src="https://github.com/user-attachments/assets/1306ca93-de06-4646-98fc-c549c03ab11c" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>T1</b><br><video src="https://github.com/user-attachments/assets/4561453a-4773-4f68-bab0-d789ac2ddff1" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>PM01</b><br><video src="https://github.com/user-attachments/assets/01cafa93-272d-4000-bf48-ca155cc1bc83" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>Asimov-1</b><br><video src="https://github.com/user-attachments/assets/9702f3cf-3f5b-45ff-9ac9-dddf469ea345" width="240" controls preload="metadata"></video></td>
-    <td align="center"><b>X2-Ultra</b><br><video src="https://github.com/user-attachments/assets/8bf29ca7-9de8-4172-8214-ef93726626e5" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>G1</b><br><video src="https://github.com/user-attachments/assets/4263ed1e-6896-4071-b48a-2afa06523d81" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>H1</b><br><video src="https://github.com/user-attachments/assets/6f8c3760-4924-403d-9611-df0e70438514" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>H2</b><br><video src="https://github.com/user-attachments/assets/c98e1463-8a1f-4589-8a0a-221ed54825ac" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>R1</b><br><video src="https://github.com/user-attachments/assets/b6310e80-848e-494a-8994-e63807fc9ffd" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>K1</b><br><video src="https://github.com/user-attachments/assets/f0824695-d637-4701-add5-85f1dfe5ff09" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>Apollo</b><br><video src="https://github.com/user-attachments/assets/81c04d12-1fff-4681-944f-504ff4b84b26" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>Oli</b><br><video src="https://github.com/user-attachments/assets/b0928249-b763-4a02-9b42-e883d6accc6b" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>N1</b><br><video src="https://github.com/user-attachments/assets/8f390db3-c9e3-4ba8-9d3f-dd5e6dfceee5" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>GR3</b><br><video src="https://github.com/user-attachments/assets/17867f63-6274-4579-8874-0ecb9108e844" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>ADAM Lite</b><br><video src="https://github.com/user-attachments/assets/667310dc-62fe-439a-999d-764edc415275" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>T1</b><br><video src="https://github.com/user-attachments/assets/41e3274e-d45e-4d39-854f-41d8609eb581" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>T2</b><br><video src="https://github.com/user-attachments/assets/aabbb38b-ffd1-4386-8f9b-cefdf1b52ca2" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>PM01</b><br><video src="https://github.com/user-attachments/assets/b17fbe42-5352-4c60-b1d1-204ff9c69bb9" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>Asimov-1</b><br><video src="https://github.com/user-attachments/assets/9c2c8c23-d99f-43c4-8da3-4afccb316d8d" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>X2-Ultra</b><br><video src="https://github.com/user-attachments/assets/50e6d390-252d-46ee-a01c-7e56862605fe" width="240" controls preload="metadata"></video></td>
+    <td align="center"><b>A3 T3.0</b><br><video src="https://github.com/user-attachments/assets/23601243-a4ea-420c-b061-8a242da65635" width="240" controls preload="metadata"></video></td>
   </tr>
 </table>
 </div>
