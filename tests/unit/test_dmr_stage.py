@@ -93,9 +93,7 @@ def test_disabled_hand_orientation_accepts_h1_without_wrist_joints() -> None:
 
 
 def test_robot_neutral_delta_is_conjugated_into_pelvis_body_frame() -> None:
-    body_from_anatomical = dmr_stage.Rotation.from_euler(
-        "xyz", (0.21, -0.13, 0.37)
-    ).as_matrix()
+    body_from_anatomical = dmr_stage.Rotation.from_euler("xyz", (0.21, -0.13, 0.37)).as_matrix()
     source_reference = np.array([0.0, 0.0, 1.0])
     source_current = np.array([0.24, -0.18, 0.954777])
     source_current /= np.linalg.norm(source_current)
@@ -105,12 +103,7 @@ def test_robot_neutral_delta_is_conjugated_into_pelvis_body_frame() -> None:
         source_reference,
         source_current,
     )
-    expected = (
-        body_from_anatomical.T
-        @ anatomical_delta
-        @ body_from_anatomical
-        @ robot_local
-    )
+    expected = body_from_anatomical.T @ anatomical_delta @ body_from_anatomical @ robot_local
     actual = dmr_stage._robot_neutral_delta_vector(
         robot_local,
         source_reference,
@@ -202,12 +195,8 @@ def test_robot_bind_trunk_uses_semantic_base_anchor_for_a3() -> None:
         anchors,
     )
     base_rotation = geometry.body_transforms["base"][:3, :3]
-    robot_spine_local = base_rotation.T @ (
-        geometry.body_transforms["spine"][:3, 3] - base_position
-    )
-    robot_neck_local = base_rotation.T @ (
-        geometry.body_transforms["neck"][:3, 3] - base_position
-    )
+    robot_spine_local = base_rotation.T @ (geometry.body_transforms["spine"][:3, 3] - base_position)
+    robot_neck_local = base_rotation.T @ (geometry.body_transforms["neck"][:3, 3] - base_position)
 
     source = dict(geometry.body_transforms)
     source_base = np.array(source["base"], copy=True)

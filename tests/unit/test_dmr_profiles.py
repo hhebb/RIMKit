@@ -508,9 +508,7 @@ class DmrProfileTest(unittest.TestCase):
                 shoulder_y = model.get_body_transform(joi[f"{prefix}s"])[1, 3]
                 elbow_y = model.get_body_transform(joi[f"{prefix}e"])[1, 3]
                 elbow_z = model.get_body_transform(joi[f"{prefix}e"])[2, 3]
-                wrist_z = model.get_body_transform(
-                    f"{side}_wrist_yaw_link"
-                )[2, 3]
+                wrist_z = model.get_body_transform(f"{side}_wrist_yaw_link")[2, 3]
                 self.assertAlmostEqual(elbow_y, shoulder_y, places=9)
                 self.assertAlmostEqual(elbow_z, wrist_z, places=9)
 

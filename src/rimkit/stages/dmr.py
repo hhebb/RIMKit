@@ -1050,9 +1050,7 @@ def run_dmr(
     # The anatomical/body-frame relation is a property of the physical model
     # frame.  Keep the mapped pelvis body origin here; the optional semantic
     # mid-hip anchor is used only for positional JOI targets above.
-    robot_anatomical_rotation = _anatomical_pelvis_rotation(
-        geometry.body_transforms
-    )
+    robot_anatomical_rotation = _anatomical_pelvis_rotation(geometry.body_transforms)
     robot_body_from_anatomical = np.matmul(
         robot_anatomical_rotation.T,
         robot_base_rotation,
