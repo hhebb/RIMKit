@@ -73,11 +73,14 @@ ROBOTS: Final = (
     "apollo",
     "oli",
     "n1",
+    "gr3",
     "adam",
     "t1",
+    "t2",
     "pm01",
     "asimov1",
     "x2",
+    "a3",
 )
 REQUIRED_STAGES: Final = (
     "1_contacts",

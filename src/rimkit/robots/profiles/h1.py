@@ -41,6 +41,7 @@ H1_DMR_PROFILE = DmrProfile(
     robot_id="h1",
     qpos_dim=27,
     joi_bodies=H1_JOI_BODY_NAMES,
+    joi_anchor_reference_keys={"base": ("lp", "rp")},
     wrist_joint_tokens=("wrist",),
     ankle_joint_tokens=("ankle",),
     toe_joint_tokens=("toe",),

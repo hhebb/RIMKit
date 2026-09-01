@@ -4,6 +4,9 @@ All notable changes to RIMKit will be documented in this file.
 
 ## Unreleased
 
+- Add Fourier GR3, AgiBot A3 T3.0, and Booster T2 support for Kimodo and GEM-X;
+  migrate T1 to the latest pelvis-root Booster model with position-only wrist
+  targets; preserve the original T1/T2 vendor joint order in exported motions.
 - Add Asimov-1 and AgiBot X2-Ultra assets and verified Kimodo/GEM-X retargeting
   profiles, expanding the public robot registry to thirteen targets.
 - Rebrand the toolkit as RIMKit, make `rimkit` the canonical Python package

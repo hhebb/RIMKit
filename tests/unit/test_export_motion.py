@@ -15,6 +15,8 @@ from rimkit.export.motion import (
     build_robot_motion_arrays,
     write_robot_motion_npz,
 )
+from rimkit.mujoco import MujocoModel
+from rimkit.robots.registry import get_robot
 
 SOURCE_SHA256 = "a" * 64
 
@@ -99,6 +101,31 @@ def test_oli_export_expands_passive_ball_joint_quaternions() -> None:
         "left_A_achilles_rod_joint_quat_y",
         "left_A_achilles_rod_joint_quat_z",
     )
+
+
+@pytest.mark.parametrize("robot_id", ("t1", "t2"))
+def test_pelvis_root_models_export_the_original_vendor_joint_order(robot_id: str) -> None:
+    robot = get_robot(robot_id)
+    model = MujocoModel.from_robot(robot_id)
+    labels, confidence, availability = _contacts()
+    qpos = _qpos(qpos_dim=robot.expected_nq)
+    qpos[:, 7:] = np.arange(1, robot.expected_nq - 6, dtype=np.float64)
+
+    arrays = build_robot_motion_arrays(
+        robot_id=robot_id,
+        qpos=qpos,
+        seconds=np.arange(4, dtype=np.float64) / 30.0,
+        fps=30.0,
+        contact_labels=labels,
+        contact_confidence=confidence,
+        contact_availability=availability,
+        source_motion_sha256=SOURCE_SHA256,
+    )
+
+    assert tuple(str(name) for name in arrays["joint_names"]) == robot.export_joint_names
+    expected_indices = model.get_qpos_indices(robot.export_joint_names)
+    np.testing.assert_array_equal(arrays["qpos"][:, :7], qpos[:, :7])
+    np.testing.assert_array_equal(arrays["qpos"][:, 7:], qpos[:, expected_indices])
 
 
 def test_write_robot_motion_npz_atomically_publishes_allow_pickle_false_archive(

@@ -29,6 +29,9 @@ def test_fpa_registry_covers_all_supported_robots_and_is_immutable() -> None:
         "pm01",
         "asimov1",
         "x2",
+        "gr3",
+        "a3",
+        "t2",
     )
     with pytest.raises(TypeError):
         FPA_PROFILES["other"] = FpaProfile(robot_id="other")  # type: ignore[index]
@@ -47,7 +50,21 @@ def test_k1_family_uses_the_unmodified_research_fpa_defaults(robot_id: str) -> N
 
 @pytest.mark.parametrize(
     "robot_id",
-    ("g1", "h2", "r1", "apollo", "oli", "n1", "adam", "t1", "pm01", "x2"),
+    (
+        "g1",
+        "h2",
+        "r1",
+        "apollo",
+        "oli",
+        "n1",
+        "adam",
+        "t1",
+        "pm01",
+        "x2",
+        "gr3",
+        "a3",
+        "t2",
+    ),
 )
 def test_g1_family_uses_the_verified_dual_support_profile(robot_id: str) -> None:
     profile = get_fpa_profile(robot_id)
@@ -63,7 +80,7 @@ def test_g1_family_uses_the_verified_dual_support_profile(robot_id: str) -> None
     (
         ("apollo", ("l_",), ("r_",)),
         ("adam", ("_Left",), ("_Right",)),
-        ("t1", ("Left_",), ("Right_",)),
+        ("t1", ("left_",), ("right_",)),
         ("pm01", ("_L",), ("_R",)),
     ),
 )
@@ -79,7 +96,7 @@ def test_new_fpa_profiles_resolve_model_specific_leg_names(
 
 @pytest.mark.parametrize(
     ("robot_id", "excluded", "lift_max"),
-    (("t1", ("Waist",), 0.040), ("pm01", ("J12_WAIST_YAW",), 0.010)),
+    (("t1", ("waist_yaw",), 0.040), ("pm01", ("J12_WAIST_YAW",), 0.010)),
 )
 def test_waist_exclusion_and_micro_lift_match_research_profiles(
     robot_id: str,
@@ -94,7 +111,22 @@ def test_waist_exclusion_and_micro_lift_match_research_profiles(
 
 
 @pytest.mark.mujoco
-@pytest.mark.parametrize("robot_id", ("apollo", "oli", "n1", "adam", "t1", "pm01", "asimov1", "x2"))
+@pytest.mark.parametrize(
+    "robot_id",
+    (
+        "apollo",
+        "oli",
+        "n1",
+        "adam",
+        "t1",
+        "pm01",
+        "asimov1",
+        "x2",
+        "gr3",
+        "a3",
+        "t2",
+    ),
+)
 def test_new_fpa_profiles_resolve_exactly_six_recovery_joints_per_leg(
     robot_id: str,
 ) -> None:

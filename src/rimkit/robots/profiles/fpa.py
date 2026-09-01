@@ -199,9 +199,9 @@ FPA_PROFILES = MappingProxyType(
         "t1": replace(
             _G1,
             robot_id="t1",
-            left_joint_tokens=("Left_",),
-            right_joint_tokens=("Right_",),
-            excluded_joint_tokens=("Waist",),
+            left_joint_tokens=("left_",),
+            right_joint_tokens=("right_",),
+            excluded_joint_tokens=("waist_yaw",),
             post_ground_micro_lift_max=0.040,
             post_ground_micro_lift_speed=0.20,
             post_ground_micro_lift_include_swing_feet=False,
@@ -218,6 +218,9 @@ FPA_PROFILES = MappingProxyType(
         ),
         "asimov1": replace(_K1, robot_id="asimov1"),
         "x2": replace(_G1, robot_id="x2"),
+        "gr3": replace(_G1, robot_id="gr3"),
+        "a3": replace(_G1, robot_id="a3"),
+        "t2": replace(_G1, robot_id="t2"),
     }
 )
 

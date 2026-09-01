@@ -25,6 +25,10 @@ class RobotSpec:
     required_joints: tuple[str, ...]
     required_sites: tuple[str, ...] = ()
     compatibility_joints: tuple[str, ...] = ()
+    # Optional public serialization order for articulated scalar joints.  It
+    # is used by retarget-only models whose kinematic tree is re-rooted for IK
+    # while exported motions must retain the vendor model's joint order.
+    export_joint_names: tuple[str, ...] = ()
 
     @property
     def actuated_dof(self) -> int:

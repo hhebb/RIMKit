@@ -17,10 +17,20 @@ c2880e89fb3451a07b6d2600e274224ffcf912e4 and remains Apache-2.0. The retained
 research model is substantially modified. Its XML contains a modification
 notice and its SOURCE.yaml and MODIFICATIONS.md describe known differences.
 
-Apptronik Apollo, Fourier Intelligence N1, PNDbotics ADAM Lite, and Booster
-Robotics T1 are derived from MuJoCo Menagerie at revision
-71f066ad0be9cd271f7ed58c030243ef157af9f4. Apollo, N1, and T1 remain
-Apache-2.0; ADAM Lite remains MIT.
+Apptronik Apollo, Fourier Intelligence N1, and PNDbotics ADAM Lite are derived
+from MuJoCo Menagerie at revision
+71f066ad0be9cd271f7ed58c030243ef157af9f4. Apollo and N1 remain Apache-2.0;
+ADAM Lite remains MIT.
+
+Booster Robotics T1 and T2 are derived from booster_assets at revision
+38a0ae84b17743a8aa21511f69ed38e7d22d1664 and remain BSD-3-Clause.
+
+Fourier Intelligence GR3 is derived from GMR at revision
+bb1bbe40774794fceb2a7c579a3464a28e68c844 and is distributed under GMR's MIT
+license.
+
+AgiBot A3 T3.0 is derived from A3-A3U-robot-model at revision
+589f508ff357447c610a3f3004419035ddc8f153 and remains MulanPSL-2.0.
 
 LimX Dynamics Oli is derived from humanoid-description at revision
 a90f734c153aa3ecffc8b674af1e0a323cb55d1a and remains Apache-2.0.

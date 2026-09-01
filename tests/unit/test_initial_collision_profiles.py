@@ -6,10 +6,12 @@ from dataclasses import FrozenInstanceError, fields, replace
 import pytest
 
 from rimkit.robots.profiles import (
+    A3_INITIAL_COLLISION_PROFILE,
     ADAM_INITIAL_COLLISION_PROFILE,
     APOLLO_INITIAL_COLLISION_PROFILE,
     ASIMOV1_INITIAL_COLLISION_PROFILE,
     G1_INITIAL_COLLISION_PROFILE,
+    GR3_INITIAL_COLLISION_PROFILE,
     H1_INITIAL_COLLISION_PROFILE,
     H2_INITIAL_COLLISION_PROFILE,
     INITIAL_COLLISION_PROFILES,
@@ -19,6 +21,7 @@ from rimkit.robots.profiles import (
     PM01_INITIAL_COLLISION_PROFILE,
     R1_INITIAL_COLLISION_PROFILE,
     T1_INITIAL_COLLISION_PROFILE,
+    T2_INITIAL_COLLISION_PROFILE,
     X2_INITIAL_COLLISION_PROFILE,
     get_initial_collision_profile,
 )
@@ -38,6 +41,9 @@ PROFILES = {
     "pm01": PM01_INITIAL_COLLISION_PROFILE,
     "asimov1": ASIMOV1_INITIAL_COLLISION_PROFILE,
     "x2": X2_INITIAL_COLLISION_PROFILE,
+    "gr3": GR3_INITIAL_COLLISION_PROFILE,
+    "a3": A3_INITIAL_COLLISION_PROFILE,
+    "t2": T2_INITIAL_COLLISION_PROFILE,
 }
 QPOS_DIMS = {
     "g1": 36,
@@ -53,6 +59,9 @@ QPOS_DIMS = {
     "pm01": 31,
     "asimov1": 30,
     "x2": 38,
+    "gr3": 38,
+    "a3": 38,
+    "t2": 38,
 }
 ROOT_BODIES = {
     "g1": "pelvis",
@@ -64,10 +73,13 @@ ROOT_BODIES = {
     "oli": "base_link",
     "n1": "base_link",
     "adam": "pelvis",
-    "t1": "Trunk",
+    "t1": "waist_yaw_link",
     "pm01": "LINK_BASE",
     "asimov1": "pelvis_link",
     "x2": "pelvis",
+    "gr3": "base_link",
+    "a3": "pelvis_link",
+    "t2": "waist_yaw_link",
 }
 
 
@@ -102,7 +114,7 @@ def test_initial_collision_profiles_match_the_public_stage3_constants(
     assert profile.margin_cap == 0.03
     assert profile.query_limit == 32
     assert profile.target_limit == 16
-    assert profile.ancestor_skip_depth == 2
+    assert profile.ancestor_skip_depth == (3 if robot_id == "t2" else 2)
     assert profile.root_body_name == ROOT_BODIES[robot_id]
     assert profile.movable_joint_tokens == ("shoulder", "elbow", "wrist", "arm")
     assert profile.movable_body_tokens == (
@@ -116,7 +128,7 @@ def test_initial_collision_profiles_match_the_public_stage3_constants(
     assert profile.orientation_weight == 0.03
     assert profile.orientation_axis_length == 0.08
     assert profile.smooth_each_pass
-    assert profile.final_pass_without_smoothing
+    assert not profile.final_pass_without_smoothing
     assert profile.final_pass_margin == 0.002
     assert profile.smooth_jerk_weight == 1e-5
     assert profile.smooth_tracking_norm == 1
@@ -140,6 +152,10 @@ def test_legacy_robot_profiles_differ_only_in_identity_and_qpos_dimension() -> N
             ), (robot_id, field.name)
 
 
+def test_all_robots_end_on_the_smoothed_30mm_collision_pass() -> None:
+    assert all(not profile.final_pass_without_smoothing for profile in PROFILES.values())
+
+
 def test_new_robot_collision_prefixes_match_research_profiles() -> None:
     assert APOLLO_INITIAL_COLLISION_PROFILE.movable_body_prefixes == ("l_", "r_")
     assert OLI_INITIAL_COLLISION_PROFILE.movable_body_prefixes == ("left_", "right_")
@@ -158,15 +174,16 @@ def test_new_robot_collision_prefixes_match_research_profiles() -> None:
         "wristYaw",
     )
     assert T1_INITIAL_COLLISION_PROFILE.movable_body_prefixes == (
-        "H",
-        "AL",
-        "AR",
-        "Waist",
-        "Hip_",
-        "Shank_",
-        "Ankle_",
+        "aahead_",
         "left_",
         "right_",
+        "trunk",
+        "waist_",
+    )
+    assert GR3_INITIAL_COLLISION_PROFILE.movable_body_prefixes == (
+        "left_",
+        "right_",
+        "dummy_right_",
     )
     assert PM01_INITIAL_COLLISION_PROFILE.movable_body_prefixes == (
         "LINK_HIP_",

@@ -33,9 +33,9 @@ models:
     local_entrypoint: h2/h2_mujoco.xml
     modifications:
       - file: h2/h2_mujoco.xml
-        summary: Added sole, toe, and hand-tip retargeting landmarks.
+        summary: Added sole, toe, hand-tip, and aligned hip, knee, ankle, and elbow retargeting landmarks.
         upstream_sha256: 2ac63ffc436fd4a368a448acacfd4f0915e7f986596b254fa681b6a95b69c47f
-        local_sha256: 0c7741f441996f8ed901a723bbe11a995d263be71639e7ddca3eca94fa5f3be0
+        local_sha256: 4f550760f5ccbcb04883308ef9c6b32df5e0bb9fab1ff9b2b3461a9753581041
   r1:
     upstream_path: unitree_robots/r1
     upstream_entrypoint: unitree_robots/r1/R1_C++.xml

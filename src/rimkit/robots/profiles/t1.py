@@ -13,11 +13,16 @@ T1_DMR_PROFILE = replace(
     qpos_dim=30,
     joi_bodies=T1_JOI_BODY_NAMES,
     joi_anchor_reference_keys={"base": ("lp", "rp")},
-    wrist_joint_tokens=("Elbow_Yaw",),
-    waist_joint_tokens=("Waist",),
+    wrist_joint_tokens=(),
+    waist_joint_tokens=("waist_yaw",),
+    exclude_waist_from_primary_dmr=False,
+    torso_orientation_weight=0.0,
+    torso_orientation_stage="none",
+    torso_orientation_axes=(),
     torso_orientation_joi_key="torso",
     left_ankle_orientation_joi_key="lsole",
     right_ankle_orientation_joi_key="rsole",
+    hand_orientation_enabled=False,
 )
 
 __all__ = ["T1_DMR_PROFILE", "T1_JOI_BODY_NAMES"]

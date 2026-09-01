@@ -1,5 +1,6 @@
 """Typed, immutable per-robot profiles for verified algorithm stages."""
 
+from rimkit.robots.profiles.a3 import A3_DMR_PROFILE
 from rimkit.robots.profiles.adam import ADAM_DMR_PROFILE
 from rimkit.robots.profiles.apollo import APOLLO_DMR_PROFILE
 from rimkit.robots.profiles.ara import (
@@ -11,13 +12,16 @@ from rimkit.robots.profiles.ara import (
 from rimkit.robots.profiles.asimov1 import ASIMOV1_DMR_PROFILE
 from rimkit.robots.profiles.fpa import FPA_PROFILES, FpaProfile, get_fpa_profile
 from rimkit.robots.profiles.g1 import G1_DMR_PROFILE
+from rimkit.robots.profiles.gr3 import GR3_DMR_PROFILE
 from rimkit.robots.profiles.h1 import H1_DMR_PROFILE
 from rimkit.robots.profiles.h2 import H2_DMR_PROFILE
 from rimkit.robots.profiles.initial_collision import (
+    A3_INITIAL_COLLISION_PROFILE,
     ADAM_INITIAL_COLLISION_PROFILE,
     APOLLO_INITIAL_COLLISION_PROFILE,
     ASIMOV1_INITIAL_COLLISION_PROFILE,
     G1_INITIAL_COLLISION_PROFILE,
+    GR3_INITIAL_COLLISION_PROFILE,
     H1_INITIAL_COLLISION_PROFILE,
     H2_INITIAL_COLLISION_PROFILE,
     INITIAL_COLLISION_PROFILES,
@@ -27,6 +31,7 @@ from rimkit.robots.profiles.initial_collision import (
     PM01_INITIAL_COLLISION_PROFILE,
     R1_INITIAL_COLLISION_PROFILE,
     T1_INITIAL_COLLISION_PROFILE,
+    T2_INITIAL_COLLISION_PROFILE,
     X2_INITIAL_COLLISION_PROFILE,
     get_initial_collision_profile,
 )
@@ -42,11 +47,14 @@ from rimkit.robots.profiles.schema import (
     InitialCollisionProfile,
 )
 from rimkit.robots.profiles.t1 import T1_DMR_PROFILE
+from rimkit.robots.profiles.t2 import T2_DMR_PROFILE
 from rimkit.robots.profiles.x2 import X2_DMR_PROFILE
 
 __all__ = [
     "ADAM_DMR_PROFILE",
+    "A3_DMR_PROFILE",
     "ADAM_INITIAL_COLLISION_PROFILE",
+    "A3_INITIAL_COLLISION_PROFILE",
     "APOLLO_DMR_PROFILE",
     "APOLLO_INITIAL_COLLISION_PROFILE",
     "ASIMOV1_DMR_PROFILE",
@@ -58,7 +66,9 @@ __all__ = [
     "FPA_PROFILES",
     "FpaProfile",
     "G1_DMR_PROFILE",
+    "GR3_DMR_PROFILE",
     "G1_INITIAL_COLLISION_PROFILE",
+    "GR3_INITIAL_COLLISION_PROFILE",
     "H1_DMR_PROFILE",
     "H1_INITIAL_COLLISION_PROFILE",
     "H2_DMR_PROFILE",
@@ -78,7 +88,9 @@ __all__ = [
     "R1_INITIAL_COLLISION_PROFILE",
     "ROBOT_NEUTRAL_ARA_PROFILE",
     "T1_DMR_PROFILE",
+    "T2_DMR_PROFILE",
     "T1_INITIAL_COLLISION_PROFILE",
+    "T2_INITIAL_COLLISION_PROFILE",
     "X2_DMR_PROFILE",
     "X2_INITIAL_COLLISION_PROFILE",
     "get_ara_profile",

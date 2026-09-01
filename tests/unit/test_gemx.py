@@ -143,6 +143,9 @@ def test_source_dispatch_rejects_unknown_container(tmp_path: Path) -> None:
         "pm01",
         "asimov1",
         "x2",
+        "gr3",
+        "a3",
+        "t2",
     ),
 )
 def test_gemx_g1_family_profile_overlay(robot_id: str) -> None:

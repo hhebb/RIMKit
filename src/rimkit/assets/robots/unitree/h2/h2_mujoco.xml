@@ -56,6 +56,8 @@
         <joint name="left_hip_roll_joint" pos="0 0 0" axis="1 0 0" range="-0.467441 2.16886" actuatorfrcrange="-360 360"/>
         <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="left_hip_roll_link"/>
         <geom size="0.05" pos="-0.02 0 0" rgba="0.7 0.7 0.7 1"/>
+        <!-- Retargeting landmark aligned fore-aft with the hip-yaw pivot. -->
+        <body name="left_hip_roll_link_aux" pos="-0.028187 0 0"/>
         <body name="left_hip_yaw_link" pos="-0.028187 -0.0095 -0.0737">
           <inertial pos="0.00069408 -0.0108659 -0.113015" quat="0.621956 -0.0405938 0.0198649 0.781747" mass="7.0875" diaginertia="0.0514013 0.0505964 0.0130063"/>
           <joint name="left_hip_yaw_joint" pos="0 0 0" axis="0 0 1" range="-2.827 2.827" actuatorfrcrange="-360 360"/>
@@ -66,11 +68,17 @@
             <joint name="left_knee_joint" pos="0 0 0" axis="0 1 0" range="-0.08725 2.53025" actuatorfrcrange="-360 360"/>
             <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="left_knee_link"/>
             <geom size="0.025 0.175" pos="0.01 -0.022549 -0.25" type="cylinder" rgba="0.7 0.7 0.7 1"/>
+            <!-- Retargeting landmark aligned laterally with the hip-roll pivot. -->
+            <body name="left_knee_link_aux" pos="0.010308 -0.013049 0"/>
             <body name="left_ankle_roll_link" pos="0.032719 -0.023002 -0.49662">
               <inertial pos="-0.0174063 6.424e-05 -0.0002146" quat="0.499157 0.502573 -0.497809 0.500449" mass="0.123182" diaginertia="4.00501e-05 3.43207e-05 1.44993e-05"/>
               <joint name="left_ankle_roll_joint" pos="0 0 0" axis="1 0 0" range="-0.349066 0.296706" actuatorfrcrange="-19 19"/>
               <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="left_ankle_roll_link"/>
-              <body name="left_ankle_pitch_link" pos="-0.014516 -0.0373 0">
+              <!-- Keep the semantic ankle on the hip-roll centerline.  The
+                   physical pitch/foot subtree is counter-offset below so its
+                   original world pose and joint ordering remain unchanged. -->
+              <body name="left_ankle_roll_link_aux" pos="-0.022411 0.009953 0">
+              <body name="left_ankle_pitch_link" pos="0.007895 -0.047253 0">
                 <inertial pos="0.032059 0.0370053 -0.0288282" quat="6.19452e-05 0.72345 -3.0004e-05 0.690377" mass="0.894967" diaginertia="0.00438317 0.00410964 0.000599978"/>
                 <joint name="left_ankle_pitch_joint" pos="0 0 0" axis="0 1 0" range="-1.13446 0.610865" actuatorfrcrange="-66.88 66.88"/>
                 <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.4 0.4 0.4 1" mesh="left_ankle_pitch_link"/>
@@ -84,6 +92,7 @@
                 <!-- Fixed retargeting landmarks centered on the outsole. -->
                 <body name="left_sole_link" pos="0.035 0.0365 -0.05"/>
                 <body name="left_toe_link" pos="0.15 0.0365 -0.05"/>
+              </body>
               </body>
             </body>
           </body>
@@ -99,6 +108,8 @@
         <joint name="right_hip_roll_joint" pos="0 0 0" axis="1 0 0" range="-2.16886 0.467441" actuatorfrcrange="-360 360"/>
         <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="right_hip_roll_link"/>
         <geom size="0.05" pos="-0.038 0 0" rgba="0.7 0.7 0.7 1"/>
+        <!-- Retargeting landmark aligned fore-aft with the hip-yaw pivot. -->
+        <body name="right_hip_roll_link_aux" pos="-0.028187 0 0"/>
         <body name="right_hip_yaw_link" pos="-0.028187 0.0095 -0.0737">
           <inertial pos="0.00069408 0.0108659 -0.113015" quat="0.781747 0.0198649 -0.0405938 0.621956" mass="7.0875" diaginertia="0.0514013 0.0505964 0.0130063"/>
           <joint name="right_hip_yaw_joint" pos="0 0 0" axis="0 0 1" range="-2.827 2.827" actuatorfrcrange="-360 360"/>
@@ -109,11 +120,17 @@
             <joint name="right_knee_joint" pos="0 0 0" axis="0 1 0" range="-0.08725 2.53025" actuatorfrcrange="-360 360"/>
             <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="right_knee_link"/>
             <geom size="0.025 0.175" pos="0.01 0.022549 -0.25" type="cylinder" rgba="0.7 0.7 0.7 1"/>
+            <!-- Retargeting landmark aligned laterally with the hip-roll pivot. -->
+            <body name="right_knee_link_aux" pos="0.010308 0.013049 0"/>
             <body name="right_ankle_roll_link" pos="0.032719 0.023002 -0.49662">
               <inertial pos="-0.0174063 -6.424e-05 -0.0002146" quat="0.502573 0.499157 -0.500449 0.497809" mass="0.123182" diaginertia="4.00501e-05 3.43207e-05 1.44993e-05"/>
               <joint name="right_ankle_roll_joint" pos="0 0 0" axis="1 0 0" range="-0.296706 0.349066" actuatorfrcrange="-19 19"/>
               <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="right_ankle_roll_link"/>
-              <body name="right_ankle_pitch_link" pos="-0.014516 0.0373 0">
+              <!-- Keep the semantic ankle on the hip-roll centerline.  The
+                   physical pitch/foot subtree is counter-offset below so its
+                   original world pose and joint ordering remain unchanged. -->
+              <body name="right_ankle_roll_link_aux" pos="-0.022411 -0.009953 0">
+              <body name="right_ankle_pitch_link" pos="0.007895 0.047253 0">
                 <inertial pos="0.032059 -0.0370053 -0.0288282" quat="-6.19452e-05 0.72345 3.0004e-05 0.690377" mass="0.894967" diaginertia="0.00438317 0.00410964 0.000599978"/>
                 <joint name="right_ankle_pitch_joint" pos="0 0 0" axis="0 1 0" range="-1.13446 0.610865" actuatorfrcrange="-66.88 66.88"/>
                 <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.4 0.4 0.4 1" mesh="right_ankle_pitch_link"/>
@@ -127,6 +144,7 @@
                 <!-- Fixed retargeting landmarks centered on the outsole. -->
                 <body name="right_sole_link" pos="0.035 -0.0365 -0.05"/>
                 <body name="right_toe_link" pos="0.15 -0.0365 -0.05"/>
+              </body>
               </body>
             </body>
           </body>
@@ -178,6 +196,8 @@
                   <joint name="left_elbow_joint" pos="0 0 0" axis="0 1 0" range="-0.986 3.071" actuatorfrcrange="-60 60"/>
                   <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="left_elbow_link"/>
                   <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="left_elbow_link"/>
+                  <!-- Retargeting landmark aligned laterally with shoulder-roll and vertically with wrist-yaw. -->
+                  <body name="left_elbow_link_aux" pos="0 -0.0257852 -0.01394266"/>
                   <body name="left_wrist_roll_link" pos="0.13119 -0.021497 -0.013769">
                     <inertial pos="0.035915 -0.00154506 0.00012879" quat="0.349429 0.616315 -0.3656 0.603649" mass="0.77426" diaginertia="0.000715547 0.000661189 0.000632495"/>
                     <joint name="left_wrist_roll_joint" pos="0 0 0" axis="1 0 0" range="-2.618 2.618" actuatorfrcrange="-60 60"/>
@@ -219,6 +239,8 @@
                   <joint name="right_elbow_joint" pos="0 0 0" axis="0 1 0" range="-0.986 3.071" actuatorfrcrange="-60 60"/>
                   <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="right_elbow_link"/>
                   <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="right_elbow_link"/>
+                  <!-- Retargeting landmark aligned laterally with shoulder-roll and vertically with wrist-yaw. -->
+                  <body name="right_elbow_link_aux" pos="0 0.0257852 -0.01394266"/>
                   <body name="right_wrist_roll_link" pos="0.13119 0.021497 -0.013769">
                     <inertial pos="0.0359137 0.00155865 0.00014187" quat="0.61587 0.348982 -0.602387 0.368844" mass="0.774265" diaginertia="0.00071595 0.000661595 0.000632525"/>
                     <joint name="right_wrist_roll_joint" pos="0 0 0" axis="1 0 0" range="-2.618 2.618" actuatorfrcrange="-60 60"/>

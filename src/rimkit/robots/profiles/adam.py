@@ -17,6 +17,10 @@ ADAM_DMR_PROFILE = replace(
     torso_orientation_joi_key="torso",
     left_ankle_orientation_joi_key="lsole",
     right_ankle_orientation_joi_key="rsole",
+    # ADAM Lite ends in a spherical hand mesh driven only by a forearm-yaw
+    # joint. Preserve wrist/hand positions without treating that single axis
+    # as a controllable human hand-orientation target.
+    hand_orientation_enabled=False,
 )
 
 __all__ = ["ADAM_DMR_PROFILE", "ADAM_JOI_BODY_NAMES"]

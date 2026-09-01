@@ -39,7 +39,7 @@ ROOT_QPOS_NAMES = (
     "root_quat_y",
     "root_quat_z",
 )
-QPOS_LAYOUT = "root_xyz_quat_wxyz_then_model_joint_qpos"
+QPOS_LAYOUT = "root_xyz_quat_wxyz_then_named_joint_qpos"
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,10 +91,31 @@ def _contact_segments(label: BoolArray) -> IntArray:
     return np.asarray(np.column_stack([starts, ends]).reshape(-1, 2), dtype=np.int64)
 
 
-@lru_cache(maxsize=16)
-def _robot_joint_names(robot_id: str) -> tuple[str, ...]:
+@lru_cache(maxsize=32)
+def _robot_joint_layout(robot_id: str) -> tuple[tuple[str, ...], NDArray[np.int32]]:
+    robot = get_robot(robot_id)
     model = MujocoModel.from_robot(robot_id)
-    return model.qpos_joint_names
+    if not robot.export_joint_names:
+        return model.qpos_joint_names, np.arange(7, robot.expected_nq, dtype=np.int32)
+
+    names = tuple(robot.export_joint_names)
+    if len(names) != robot.expected_nq - 7:
+        raise ArtifactError(
+            f"Robot {robot.robot_id!r} export joint layout does not match qpos dimension."
+        )
+    if len(set(names)) != len(names):
+        raise ArtifactError(f"Robot {robot.robot_id!r} export joint layout has duplicates.")
+    try:
+        indices = model.get_qpos_indices(names)
+    except KeyError as error:
+        raise ArtifactError(
+            f"Robot {robot.robot_id!r} export joint layout references an unknown joint."
+        ) from error
+    if np.any(indices < 7):
+        raise ArtifactError(
+            f"Robot {robot.robot_id!r} export joint layout must exclude the free root."
+        )
+    return names, indices
 
 
 @lru_cache(maxsize=16)
@@ -195,9 +216,12 @@ def build_robot_motion_arrays(
     if not str(contact_source).strip() or not str(hand_contact_source).strip():
         raise MotionValidationError("Robot-motion contact source labels must not be empty.")
 
-    joint_names = _robot_joint_names(robot.robot_id)
+    joint_names, export_qpos_indices = _robot_joint_layout(robot.robot_id)
     if len(joint_names) != robot.expected_nq - 7:
         raise ArtifactError(f"Robot {robot.robot_id!r} joint layout does not match qpos dimension.")
+    exported_trajectory = np.concatenate(
+        (trajectory[:, :7], trajectory[:, export_qpos_indices]), axis=1
+    )
 
     arrays: dict[str, NDArray[np.generic]] = {
         "schema_version": np.asarray(ROBOT_MOTION_SCHEMA_VERSION, dtype=np.int32),
@@ -209,7 +233,7 @@ def build_robot_motion_arrays(
         "source_motion_sha256": np.asarray(source_hash),
         "fps": np.asarray(fps_value, dtype=np.float64),
         "timestamps_s": time_values,
-        "qpos": trajectory,
+        "qpos": exported_trajectory,
         "qpos_layout": np.asarray(QPOS_LAYOUT),
         "root_qpos_names": np.asarray(ROOT_QPOS_NAMES),
         "joint_names": np.asarray(joint_names),
