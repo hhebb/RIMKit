@@ -299,6 +299,9 @@ def _run_serve(args: argparse.Namespace) -> int:
             max_frames=args.max_frames,
             max_active_jobs=args.max_active_jobs,
             result_ttl_minutes=args.result_ttl_minutes,
+            preview_max_fps=args.preview_max_fps,
+            default_video_width=args.default_video_width,
+            default_video_height=args.default_video_height,
             max_video_width=args.max_video_width,
             max_video_height=args.max_video_height,
             allow_stage_archives=not args.disable_stage_archives,
@@ -433,6 +436,14 @@ def build_parser() -> argparse.ArgumentParser:
         default=0,
         help="delete completed web jobs after this many minutes; 0 retains them",
     )
+    serve_parser.add_argument(
+        "--preview-max-fps",
+        type=float,
+        default=0.0,
+        help="maximum web preview FPS; 0 preserves the source FPS",
+    )
+    serve_parser.add_argument("--default-video-width", type=int, default=854)
+    serve_parser.add_argument("--default-video-height", type=int, default=480)
     serve_parser.add_argument("--max-video-width", type=int, default=3840)
     serve_parser.add_argument("--max-video-height", type=int, default=2160)
     serve_parser.add_argument(
@@ -470,8 +481,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                 parser.error("--max-active-jobs must be non-negative")
             if args.result_ttl_minutes < 0:
                 parser.error("--result-ttl-minutes must be non-negative")
+            if args.preview_max_fps < 0:
+                parser.error("--preview-max-fps must be non-negative")
             if args.max_video_width < 320 or args.max_video_height < 240:
                 parser.error("video limits must be at least 320x240")
+            if (
+                args.default_video_width < 320
+                or args.default_video_height < 240
+                or args.default_video_width > args.max_video_width
+                or args.default_video_height > args.max_video_height
+            ):
+                parser.error("default video dimensions must fit within the video limits")
             return _run_serve(args)
         parser.error(f"Unknown command: {args.command}")
     except RIMKitError as exc:

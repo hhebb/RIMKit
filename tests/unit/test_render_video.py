@@ -117,6 +117,80 @@ def test_render_motion_preview_forwards_gemx_source_provider(
     assert observed["source_provider"] == "gem-x"
 
 
+def test_render_motion_preview_downsamples_only_preview_frames(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = _qpos(frames=6)
+    source[:, 0] = np.arange(6, dtype=np.float64)
+    base_contacts = _contacts(frames=6)
+    labels = np.array(base_contacts.labels, copy=True)
+    labels[:, 0] = np.asarray([True, False, True, False, True, False])
+    contacts = PreviewContactState(
+        fps=base_contacts.fps,
+        seconds=base_contacts.seconds,
+        labels=labels,
+        confidence=base_contacts.confidence,
+        availability=base_contacts.availability,
+        flight=base_contacts.flight,
+        segment_ranges=base_contacts.segment_ranges,
+        segment_boundaries=base_contacts.segment_boundaries,
+        contact_source=base_contacts.contact_source,
+        hand_contact_source=base_contacts.hand_contact_source,
+    )
+    observed: dict[str, Any] = {}
+
+    def fake_render(**kwargs: Any) -> video.PreviewCamera:
+        observed.update(kwargs)
+        return video.preview_camera_for_robot("k1")
+
+    monkeypatch.setattr(video, "_render_preview_files", fake_render)
+
+    result = video.render_motion_preview(
+        robot_id="k1",
+        qpos=source,
+        fps=30.0,
+        motion_name="motion",
+        contacts=contacts,
+        video_path=None,
+        thumbnail_path=tmp_path / "thumbnail.png",
+        max_fps=15.0,
+    )
+
+    assert result.fps == 15.0
+    assert result.frame_count == 3
+    assert np.array_equal(observed["qpos"][:, 0], np.asarray([0.0, 2.0, 4.0]))
+    sampled_contacts = observed["contacts"]
+    assert isinstance(sampled_contacts, PreviewContactState)
+    assert sampled_contacts.fps == 15.0
+    assert np.allclose(sampled_contacts.seconds, np.asarray([0.0, 1.0 / 15.0, 2.0 / 15.0]))
+    assert np.array_equal(sampled_contacts.labels[:, 0], np.asarray([True, True, True]))
+    assert source.shape == (6, get_robot("k1").expected_nq)
+
+
+@pytest.mark.parametrize("max_fps", (0.0, -1.0, float("nan"), True))
+def test_render_motion_preview_rejects_invalid_max_fps(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    max_fps: float,
+) -> None:
+    monkeypatch.setattr(
+        video,
+        "_render_preview_files",
+        lambda **_: pytest.fail("invalid max FPS reached the rendering backend"),
+    )
+
+    with pytest.raises(video.PreviewRenderError, match="max_fps"):
+        video.render_motion_preview(
+            robot_id="k1",
+            qpos=_qpos(),
+            fps=30.0,
+            video_path=None,
+            thumbnail_path=tmp_path / "thumbnail.png",
+            max_fps=max_fps,
+        )
+
+
 def test_render_motion_preview_rejects_unknown_source_provider(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

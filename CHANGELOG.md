@@ -4,6 +4,9 @@ All notable changes to RIMKit will be documented in this file.
 
 ## Unreleased
 
+- Reduce Hugging Face Space preview cost with a 15 FPS cap and 640×360 default
+  while preserving local-demo defaults and the full source timeline in exported
+  robot-motion data.
 - Add Fourier GR3, AgiBot A3 T3.0, and Booster T2 support for Kimodo and GEM-X;
   migrate T1 to the latest pelvis-root Booster model with position-only wrist
   targets; preserve the original T1/T2 vendor joint order in exported motions.
